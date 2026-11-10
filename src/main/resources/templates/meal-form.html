@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Log a meal</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+<main>
+    <h1>Log a meal</h1>
+
+    <form th:action="@{/meals}" th:object="${mealForm}" method="post">
+        <p class="error" th:each="e : ${#fields.globalErrors()}" th:text="${e}"></p>
+
+        <label>When
+            <input type="datetime-local" th:field="*{eatenAt}">
+        </label>
+        <p class="error" th:if="${#fields.hasErrors('eatenAt')}" th:errors="*{eatenAt}"></p>
+
+        <div id="items">
+            <fieldset class="item" th:each="item, s : *{items}">
+                <label>Food
+                    <input list="foods" autocomplete="off" th:field="*{items[__${s.index}__].foodName}">
+                </label>
+                <p class="error" th:if="${#fields.hasErrors('items[__${s.index}__].foodName')}"
+                   th:errors="*{items[__${s.index}__].foodName}"></p>
+
+                <div class="row">
+                    <label>Amount
+                        <input type="number" step="any" min="0" inputmode="decimal"
+                               th:field="*{items[__${s.index}__].amount}">
+                    </label>
+                    <label>Unit
+                        <select th:field="*{items[__${s.index}__].unit}">
+                            <option th:value="GRAMS">grams</option>
+                            <option th:value="PORTIONS">portions (e.g. 2 eggs)</option>
+                        </select>
+                    </label>
+                </div>
+                <p class="error" th:if="${#fields.hasErrors('items[__${s.index}__].amount')}"
+                   th:errors="*{items[__${s.index}__].amount}"></p>
+
+                <label>Fat per 100 g <small>only for a food you haven't logged before</small>
+                    <input type="number" step="any" min="0" max="100" inputmode="decimal"
+                           th:field="*{items[__${s.index}__].fatPer100g}">
+                </label>
+                <p class="error" th:if="${#fields.hasErrors('items[__${s.index}__].fatPer100g')}"
+                   th:errors="*{items[__${s.index}__].fatPer100g}"></p>
+
+                <label>Grams per portion <small>only when using portions and the food has none yet</small>
+                    <input type="number" step="any" min="0" inputmode="decimal"
+                           th:field="*{items[__${s.index}__].portionGrams}">
+                </label>
+                <p class="error" th:if="${#fields.hasErrors('items[__${s.index}__].portionGrams')}"
+                   th:errors="*{items[__${s.index}__].portionGrams}"></p>
+            </fieldset>
+        </div>
+        <datalist id="foods">
+            <option th:each="name : ${foodNames}" th:value="${name}"></option>
+        </datalist>
+
+        <button type="button" id="add-item" class="secondary">+ Add another food</button>
+
+        <label>Note <small>optional</small>
+            <input type="text" th:field="*{note}">
+        </label>
+
+        <label class="confirm" th:if="${askConfirmLarge or mealForm.confirmLarge}">
+            <input type="checkbox" th:field="*{confirmLarge}"> Yes, the amounts over 2,000 g are right
+        </label>
+
+        <button type="submit">Save meal</button>
+    </form>
+</main>
+<script>
+    // Copy the last food row, renumber its fields, and clear them.
+    document.getElementById('add-item').addEventListener('click', () => {
+        const rows = document.querySelectorAll('#items .item');
+        const copy = rows[rows.length - 1].cloneNode(true);
+        copy.querySelectorAll('.error').forEach(e => e.remove());
+        copy.querySelectorAll('[name]').forEach(el => {
+            el.name = el.name.replace(/items\[\d+\]/, `items[${rows.length}]`);
+            el.removeAttribute('id');
+            el.value = el.tagName === 'SELECT' ? 'GRAMS' : '';
+        });
+        document.getElementById('items').appendChild(copy);
+        copy.querySelector('input').focus();
+    });
+</script>
+</body>
+</html>

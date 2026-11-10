@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: gallbladder
+      POSTGRES_USER: gallbladder
+      POSTGRES_PASSWORD: gallbladder
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "gallbladder"]
+      interval: 2s
+      retries: 15
+
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/gallbladder
+      # Meal times are local times; "now" and the future-time check use this zone. Change it to yours.
+      TZ: Asia/Shanghai
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

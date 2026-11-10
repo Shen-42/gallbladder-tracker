@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Meal</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+<main th:with="total=${meal.fatTotal()}, over=${threshold != null and total > threshold}">
+    <h1 th:text="${#temporals.format(meal.eatenAt, 'EEE d MMM, HH:mm')}">Meal</h1>
+
+    <p class="total" th:classappend="${over} ? 'over'">
+        <strong th:text="|${#numbers.formatDecimal(total, 1, 1)} g fat|">0 g fat</strong>
+        <span th:if="${threshold == null}">· No fat limit set yet.</span>
+        <span th:if="${over}"
+              th:text="|· Over your ${#numbers.formatDecimal(threshold, 1, 1)} g limit by ${#numbers.formatDecimal(total - threshold, 1, 1)} g|"></span>
+        <span th:if="${threshold != null and !over}"
+              th:text="|· Within your ${#numbers.formatDecimal(threshold, 1, 1)} g limit|"></span>
+    </p>
+
+    <ul class="items">
+        <li th:each="i : ${meal.items}">
+            <span th:text="${i.food.name}">Food</span>
+            <span class="muted"
+                  th:text="|${i.grams.stripTrailingZeros().toPlainString()} g · ${#numbers.formatDecimal(i.fatGrams(), 1, 1)} g fat|"></span>
+        </li>
+    </ul>
+    <p th:if="${meal.note != null}" th:text="${meal.note}"></p>
+
+    <a class="button" th:href="@{/meals/new}">Log another meal</a>
+</main>
+</body>
+</html>
