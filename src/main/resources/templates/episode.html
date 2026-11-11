@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Episode</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main>
+    <h1 th:text="${#temporals.format(episode.startedAt, 'EEE d MMM, HH:mm')}">Episode</h1>
+
+    <p class="total severity" th:text="|Severity ${episode.severity} / 10|">Severity</p>
+
+    <ul class="items">
+        <li th:if="${episode.endedAt != null}"
+            th:text="|Ended ${#temporals.format(episode.endedAt, 'EEE d MMM, HH:mm')}|"></li>
+        <li th:if="${episode.endedAt == null}" class="muted">No end time recorded</li>
+        <li th:if="${episode.location != null}" th:text="${episode.location}"></li>
+    </ul>
+    <p th:if="${episode.note != null}" th:text="${episode.note}"></p>
+
+    <a class="button" th:href="@{/episodes/new}">Log another episode</a>
+</main>
+</body>
+</html>

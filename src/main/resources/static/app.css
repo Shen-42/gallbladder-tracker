@@ -16,3 +16,12 @@ button.secondary { background: #e4e9f0; color: #2a5d9f; }
 .total.over { background: #fbe9e7; }
 .items { padding-left: 1.2rem; }
 .muted { color: #666; }
+nav { display: flex; gap: 1rem; max-width: 32rem; margin: 0 auto; padding: .75rem 1rem 0; }
+nav a { color: #2a5d9f; }
+.scale { background: none; border: 0; padding: 0; margin: .75rem 0 .25rem; }
+.scale legend { font-weight: 600; padding: 0; }
+.scale-options { display: flex; justify-content: space-between; }
+.scale-options label { margin: .25rem 0 0; font-weight: normal; text-align: center; }
+input[type=radio] { width: auto; margin: 0 auto; }
+.scale-anchors { display: flex; justify-content: space-between; font-size: .85rem; color: #666; }
+.total.severity { background: #eef1f5; }

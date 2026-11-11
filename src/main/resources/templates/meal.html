@@ -7,6 +7,7 @@
     <link rel="stylesheet" th:href="@{/app.css}">
 </head>
 <body>
+<nav th:replace="~{fragments :: nav}"></nav>
 <main th:with="total=${meal.fatTotal()}, over=${threshold != null and total > threshold}">
     <h1 th:text="${#temporals.format(meal.eatenAt, 'EEE d MMM, HH:mm')}">Meal</h1>
 

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Log an episode</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main>
+    <h1>Log an episode</h1>
+
+    <form th:action="@{/episodes}" th:object="${episodeForm}" method="post">
+        <label>Started
+            <input type="datetime-local" th:field="*{startedAt}">
+        </label>
+        <p class="error" th:if="${#fields.hasErrors('startedAt')}" th:errors="*{startedAt}"></p>
+
+        <label>Ended <small>optional, leave empty if it hasn't stopped</small>
+            <input type="datetime-local" th:field="*{endedAt}">
+        </label>
+        <p class="error" th:if="${#fields.hasErrors('endedAt')}" th:errors="*{endedAt}"></p>
+
+        <fieldset class="scale">
+            <legend>How bad is the pain?</legend>
+            <div class="scale-options">
+                <label th:each="n : ${#numbers.sequence(0, 10)}">
+                    <input type="radio" th:field="*{severity}" th:value="${n}">
+                    <span th:text="${n}">0</span>
+                </label>
+            </div>
+            <div class="scale-anchors"><span>0 = no pain</span><span>10 = worst pain imaginable</span></div>
+        </fieldset>
+        <p class="error" th:if="${#fields.hasErrors('severity')}" th:errors="*{severity}"></p>
+
+        <label>Where <small>optional</small>
+            <input list="locations" autocomplete="off" th:field="*{location}">
+        </label>
+        <datalist id="locations">
+            <option value="upper right abdomen"></option>
+            <option value="upper middle abdomen"></option>
+            <option value="right shoulder"></option>
+            <option value="back, between the shoulder blades"></option>
+        </datalist>
+
+        <label>Note <small>optional</small>
+            <input type="text" th:field="*{note}">
+        </label>
+
+        <button type="submit">Save episode</button>
+    </form>
+</main>
+</body>
+</html>
