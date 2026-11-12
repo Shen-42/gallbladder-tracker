@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Timeline</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main>
+    <h1>
+        <span th:text="${#temporals.format(date, 'EEE d MMM yyyy')}">Day</span>
+        <small th:if="${isToday}" class="muted">today</small>
+    </h1>
+
+    <p class="day-links">
+        <a th:href="@{/days/{d}(d=${previous})}">&larr; Previous day</a>
+        <a th:if="${next != null}" th:href="@{/days/{d}(d=${next})}">Next day &rarr;</a>
+    </p>
+
+    <p th:if="${entries.isEmpty()}" class="muted">Nothing logged on this day.</p>
+
+    <ul class="timeline">
+        <li th:each="e : ${entries}" th:classappend="${e.episode != null} ? 'episode' : (${e.overThreshold} ? 'over')">
+            <a th:if="${e.meal != null}" th:href="@{/meals/{id}(id=${e.meal.id})}">
+                <time th:text="${#temporals.format(e.at, 'HH:mm')}">08:00</time>
+                <span class="what" th:text="${#strings.listJoin(e.meal.items.![food.name], ', ')}">Meal</span>
+                <span class="fat" th:text="|${#numbers.formatDecimal(e.meal.fatTotal(), 1, 1)} g fat|">0 g fat</span>
+                <strong th:if="${e.overThreshold}" class="flag">over limit</strong>
+            </a>
+            <a th:if="${e.episode != null}" th:href="@{/episodes/{id}(id=${e.episode.id})}">
+                <time th:text="${#temporals.format(e.at, 'HH:mm')}">12:00</time>
+                <span class="what"
+                      th:text="|Pain ${e.episode.severity}/10${e.episode.location != null ? ' · ' + e.episode.location : ''}|">Pain</span>
+            </a>
+        </li>
+    </ul>
+</main>
+</body>
+</html>

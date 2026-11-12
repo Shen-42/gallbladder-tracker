@@ -19,4 +19,8 @@ public class Settings {
     public BigDecimal getFatThresholdGrams() {
         return fatThresholdGrams;
     }
+
+    public void setFatThresholdGrams(BigDecimal fatThresholdGrams) {
+        this.fatThresholdGrams = fatThresholdGrams;
+    }
 }

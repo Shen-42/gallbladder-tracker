@@ -20,6 +20,7 @@ public class Meal {
     private String note;
 
     @OneToMany(mappedBy = "meal", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
     private List<MealItem> items = new ArrayList<>();
 
     protected Meal() {
