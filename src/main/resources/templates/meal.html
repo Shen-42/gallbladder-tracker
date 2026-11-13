@@ -10,6 +10,7 @@
 <nav th:replace="~{fragments :: nav}"></nav>
 <main th:with="total=${meal.fatTotal()}, over=${threshold != null and total > threshold}">
     <h1 th:text="${#temporals.format(meal.eatenAt, 'EEE d MMM, HH:mm')}">Meal</h1>
+    <p><a th:href="@{/days/{d}(d=${meal.eatenAt.toLocalDate()})}">&larr; Timeline for this day</a></p>
 
     <p class="total" th:classappend="${over} ? 'over'">
         <strong th:text="|${#numbers.formatDecimal(total, 1, 1)} g fat|">0 g fat</strong>
@@ -28,6 +29,13 @@
         </li>
     </ul>
     <p th:if="${meal.note != null}" th:text="${meal.note}"></p>
+
+    <div class="actions">
+        <a class="button" th:href="@{/meals/{id}/edit(id=${meal.id})}">Edit</a>
+        <form th:action="@{/meals/{id}/delete(id=${meal.id})}" method="post">
+            <button type="submit" class="danger">Delete</button>
+        </form>
+    </div>
 
     <a class="button" th:href="@{/meals/new}">Log another meal</a>
 </main>

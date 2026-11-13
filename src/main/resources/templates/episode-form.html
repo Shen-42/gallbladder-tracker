@@ -3,15 +3,15 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Log an episode</title>
+    <title th:text="${episodeId == null} ? 'Log an episode' : 'Edit episode'">Log an episode</title>
     <link rel="stylesheet" th:href="@{/app.css}">
 </head>
 <body>
 <nav th:replace="~{fragments :: nav}"></nav>
 <main>
-    <h1>Log an episode</h1>
+    <h1 th:text="${episodeId == null} ? 'Log an episode' : 'Edit episode'">Log an episode</h1>
 
-    <form th:action="@{/episodes}" th:object="${episodeForm}" method="post">
+    <form th:action="${episodeId == null} ? @{/episodes} : @{/episodes/{id}(id=${episodeId})}" th:object="${episodeForm}" method="post">
         <label>Started
             <input type="datetime-local" th:field="*{startedAt}">
         </label>
@@ -48,7 +48,10 @@
             <input type="text" th:field="*{note}">
         </label>
 
-        <button type="submit">Save episode</button>
+        <div class="form-buttons">
+            <button type="submit">Save episode</button>
+            <a th:href="${episodeId == null} ? @{/days} : @{/episodes/{id}(id=${episodeId})}">Cancel</a>
+        </div>
     </form>
 </main>
 </body>

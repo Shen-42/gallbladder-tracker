@@ -1,6 +1,7 @@
 package dev.kevin.gallbladder;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@SQLRestriction("deleted_at is null") // deleted meals are hidden from every query until restored
 public class Meal {
 
     @Id
@@ -19,6 +21,8 @@ public class Meal {
 
     private String note;
 
+    private LocalDateTime deletedAt;
+
     @OneToMany(mappedBy = "meal", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("id")
     private List<MealItem> items = new ArrayList<>();
@@ -29,6 +33,15 @@ public class Meal {
     public Meal(LocalDateTime eatenAt, String note) {
         this.eatenAt = eatenAt;
         this.note = note;
+    }
+
+    public void update(LocalDateTime eatenAt, String note) {
+        this.eatenAt = eatenAt;
+        this.note = note;
+    }
+
+    public void markDeleted(LocalDateTime when) {
+        this.deletedAt = when;
     }
 
     public void addItem(Food food, BigDecimal grams) {

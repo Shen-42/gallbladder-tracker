@@ -8,8 +8,11 @@ import org.springframework.validation.Errors;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -30,12 +33,55 @@ public class MealService {
         this.clock = clock;
     }
 
+    /** A valid form, turned into changes that have not been applied yet. */
+    private record Draft(List<Line> lines, Collection<Food> newFoods, Map<Food, BigDecimal> portionUpdates) {
+    }
+
+    private record Line(Food food, BigDecimal grams) {
+    }
+
     /**
      * Checks the form, recording problems in {@code errors} next to the field they belong to.
      * Saves nothing unless the whole form is valid.
      */
     @Transactional
     public Optional<Meal> log(MealForm form, Errors errors) {
+        return check(form, errors).map(draft -> {
+            Meal meal = new Meal(form.getEatenAt(), blankToNull(form.getNote()));
+            apply(draft, meal);
+            return meals.save(meal);
+        });
+    }
+
+    /** Like {@link #log}, but replaces the time, note and foods of an existing meal. */
+    @Transactional
+    public Optional<Meal> update(long id, MealForm form, Errors errors) {
+        Meal meal = meals.findById(id).orElseThrow(NotFoundException::new);
+        return check(form, errors).map(draft -> {
+            meal.update(form.getEatenAt(), blankToNull(form.getNote()));
+            meal.getItems().clear();
+            apply(draft, meal);
+            return meal;
+        });
+    }
+
+    /** Hides the meal everywhere until {@link #restore} is called. Returns it so the caller can say what was deleted. */
+    @Transactional
+    public Meal delete(long id) {
+        Meal meal = meals.findById(id).orElseThrow(NotFoundException::new);
+        meal.markDeleted(LocalDateTime.now(clock));
+        return meal;
+    }
+
+    @Transactional
+    public Meal restore(long id) {
+        if (meals.restore(id) == 0) {
+            throw new NotFoundException();
+        }
+        return meals.findById(id).orElseThrow(NotFoundException::new);
+    }
+
+    private Optional<Draft> check(MealForm form, Errors errors) {
         LocalDateTime eatenAt = form.getEatenAt();
         if (eatenAt == null) {
             errors.rejectValue("eatenAt", "required", "Enter when you ate.");
@@ -46,7 +92,7 @@ public class MealService {
             errors.reject("noItems", "Add at least one food.");
         }
 
-        Meal meal = new Meal(eatenAt, blankToNull(form.getNote()));
+        List<Line> lines = new ArrayList<>();
         Map<String, Food> newFoods = new HashMap<>();
         // Existing foods are managed entities, so their changes wait until the form is known to be valid.
         Map<Food, BigDecimal> portionUpdates = new IdentityHashMap<>();
@@ -101,15 +147,19 @@ public class MealService {
                 errors.rejectValue(row + "amount", "tooLarge", "That is " + grams.stripTrailingZeros().toPlainString()
                         + " g, over 2,000 g. Fix the amount, or tick the box below if it is right.");
             }
-            meal.addItem(food, grams);
+            lines.add(new Line(food, grams));
         }
 
         if (errors.hasErrors()) {
             return Optional.empty();
         }
-        portionUpdates.forEach(Food::setPortionGrams);
-        foods.saveAll(newFoods.values());
-        return Optional.of(meals.save(meal));
+        return Optional.of(new Draft(lines, newFoods.values(), portionUpdates));
+    }
+
+    private void apply(Draft draft, Meal meal) {
+        draft.portionUpdates().forEach(Food::setPortionGrams);
+        foods.saveAll(draft.newFoods());
+        draft.lines().forEach(line -> meal.addItem(line.food(), line.grams()));
     }
 
     private static boolean isPositive(BigDecimal value) {

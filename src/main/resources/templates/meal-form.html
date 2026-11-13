@@ -3,15 +3,15 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Log a meal</title>
+    <title th:text="${mealId == null} ? 'Log a meal' : 'Edit meal'">Log a meal</title>
     <link rel="stylesheet" th:href="@{/app.css}">
 </head>
 <body>
 <nav th:replace="~{fragments :: nav}"></nav>
 <main>
-    <h1>Log a meal</h1>
+    <h1 th:text="${mealId == null} ? 'Log a meal' : 'Edit meal'">Log a meal</h1>
 
-    <form th:action="@{/meals}" th:object="${mealForm}" method="post">
+    <form th:action="${mealId == null} ? @{/meals} : @{/meals/{id}(id=${mealId})}" th:object="${mealForm}" method="post">
         <p class="error" th:each="e : ${#fields.globalErrors()}" th:text="${e}"></p>
 
         <label>When
@@ -71,7 +71,10 @@
             <input type="checkbox" th:field="*{confirmLarge}"> Yes, the amounts over 2,000 g are right
         </label>
 
-        <button type="submit">Save meal</button>
+        <div class="form-buttons">
+            <button type="submit">Save meal</button>
+            <a th:href="${mealId == null} ? @{/days} : @{/meals/{id}(id=${mealId})}">Cancel</a>
+        </div>
     </form>
 </main>
 <script>

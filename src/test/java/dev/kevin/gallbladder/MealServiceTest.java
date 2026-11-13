@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
@@ -22,6 +23,7 @@ class MealServiceTest {
 
     @Autowired FoodRepository foods;
     @Autowired MealRepository meals;
+    @Autowired TestEntityManager em;
     MealService service;
 
     @BeforeEach
@@ -113,6 +115,80 @@ class MealServiceTest {
 
         assertThat(service.log(form, errors)).isEmpty();
         assertThat(errors.getGlobalError()).isNotNull();
+    }
+
+    @Test
+    void updateReplacesTimeNoteAndFoods() {
+        MealForm original = form(NOW.minusHours(3), item("Egg", "100", MealForm.Unit.GRAMS, "10", null));
+        long id = service.log(original, errors(original)).orElseThrow().getId();
+
+        MealForm edited = form(NOW.minusHours(2),
+                item("Rice", "200", MealForm.Unit.GRAMS, "0.5", null),
+                item("egg", "50", MealForm.Unit.GRAMS, null, null));
+        edited.setNote("lunch");
+        service.update(id, edited, errors(edited)).orElseThrow();
+        reloadFromDatabase();
+
+        Meal meal = meals.findById(id).orElseThrow();
+        assertThat(meal.getEatenAt()).isEqualTo(NOW.minusHours(2));
+        assertThat(meal.getNote()).isEqualTo("lunch");
+        assertThat(meal.getItems()).extracting(i -> i.getFood().getName()).containsExactly("Rice", "Egg");
+        assertThat(meal.fatTotal()).isEqualByComparingTo("6");
+    }
+
+    @Test
+    void invalidUpdateChangesNothing() {
+        MealForm original = form(NOW.minusHours(3), item("Egg", "100", MealForm.Unit.GRAMS, "10", null));
+        long id = service.log(original, errors(original)).orElseThrow().getId();
+
+        MealForm edited = form(NOW.plusHours(1), item("Egg", "300", MealForm.Unit.GRAMS, null, null));
+        Errors errors = errors(edited);
+        assertThat(service.update(id, edited, errors)).isEmpty();
+        assertThat(errors.getFieldError("eatenAt")).isNotNull();
+        reloadFromDatabase();
+
+        Meal meal = meals.findById(id).orElseThrow();
+        assertThat(meal.getEatenAt()).isEqualTo(NOW.minusHours(3));
+        assertThat(meal.getItems()).extracting(MealItem::getGrams).usingElementComparator(BigDecimal::compareTo)
+                .containsExactly(new BigDecimal("100"));
+    }
+
+    @Test
+    void deleteHidesMealAndRestoreBringsItBackWithItsFoods() {
+        MealForm form = form(NOW, item("Egg", "100", MealForm.Unit.GRAMS, "10", null));
+        long id = service.log(form, errors(form)).orElseThrow().getId();
+
+        service.delete(id);
+        reloadFromDatabase();
+        assertThat(meals.findById(id)).isEmpty();
+        assertThat(meals.findEatenBetween(NOW.minusDays(1), NOW.plusDays(1))).isEmpty();
+
+        service.restore(id);
+        reloadFromDatabase();
+        assertThat(meals.findById(id).orElseThrow().fatTotal()).isEqualByComparingTo("10");
+    }
+
+    @Test
+    void editedFormStartsFromTheSavedMeal() {
+        MealForm original = form(NOW, item("Soup", "2500", MealForm.Unit.GRAMS, "1", null));
+        original.setConfirmLarge(true);
+        original.setNote("dinner");
+        Meal meal = service.log(original, errors(original)).orElseThrow();
+
+        MealForm form = MealForm.from(meal);
+
+        assertThat(form.getEatenAt()).isEqualTo(NOW);
+        assertThat(form.getNote()).isEqualTo("dinner");
+        assertThat(form.getItems()).singleElement().satisfies(i -> {
+            assertThat(i.getFoodName()).isEqualTo("Soup");
+            assertThat(i.getAmount()).isEqualByComparingTo("2500");
+        });
+        assertThat(form.isConfirmLarge()).as("already confirmed when first saved").isTrue();
+    }
+
+    private void reloadFromDatabase() {
+        em.flush();
+        em.clear();
     }
 
     private static MealForm form(LocalDateTime eatenAt, MealForm.Item... items) {

@@ -27,6 +27,42 @@ public class EpisodeService {
      */
     @Transactional
     public Optional<Episode> log(EpisodeForm form, Errors errors) {
+        if (!isValid(form, errors)) {
+            return Optional.empty();
+        }
+        return Optional.of(episodes.save(new Episode(form.getStartedAt(), form.getEndedAt(), form.getSeverity(),
+                blankToNull(form.getLocation()), blankToNull(form.getNote()))));
+    }
+
+    /** Like {@link #log}, but changes an existing episode. */
+    @Transactional
+    public Optional<Episode> update(long id, EpisodeForm form, Errors errors) {
+        Episode episode = episodes.findById(id).orElseThrow(NotFoundException::new);
+        if (!isValid(form, errors)) {
+            return Optional.empty();
+        }
+        episode.update(form.getStartedAt(), form.getEndedAt(), form.getSeverity(),
+                blankToNull(form.getLocation()), blankToNull(form.getNote()));
+        return Optional.of(episode);
+    }
+
+    /** Hides the episode everywhere until {@link #restore} is called. Returns it so the caller can say what was deleted. */
+    @Transactional
+    public Episode delete(long id) {
+        Episode episode = episodes.findById(id).orElseThrow(NotFoundException::new);
+        episode.markDeleted(LocalDateTime.now(clock));
+        return episode;
+    }
+
+    @Transactional
+    public Episode restore(long id) {
+        if (episodes.restore(id) == 0) {
+            throw new NotFoundException();
+        }
+        return episodes.findById(id).orElseThrow(NotFoundException::new);
+    }
+
+    private boolean isValid(EpisodeForm form, Errors errors) {
         LocalDateTime now = LocalDateTime.now(clock);
         LocalDateTime start = form.getStartedAt();
         LocalDateTime end = form.getEndedAt();
@@ -48,12 +84,7 @@ public class EpisodeService {
         if (severity == null || severity < 0 || severity > 10) {
             errors.rejectValue("severity", "required", "Choose how bad the pain is, from 0 to 10.");
         }
-
-        if (errors.hasErrors()) {
-            return Optional.empty();
-        }
-        return Optional.of(episodes.save(new Episode(start, end, severity,
-                blankToNull(form.getLocation()), blankToNull(form.getNote()))));
+        return !errors.hasErrors();
     }
 
     private static String blankToNull(String s) {

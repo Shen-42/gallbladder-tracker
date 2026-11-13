@@ -18,6 +18,23 @@ public class MealForm {
 
     public enum Unit { GRAMS, PORTIONS }
 
+    /** A form filled in from a saved meal, for editing. Amounts come back as grams. */
+    static MealForm from(Meal meal) {
+        MealForm form = new MealForm();
+        form.eatenAt = meal.getEatenAt();
+        form.note = meal.getNote();
+        for (MealItem mealItem : meal.getItems()) {
+            Item item = new Item();
+            item.foodName = mealItem.getFood().getName();
+            // "100" rather than "100.00" in the input
+            item.amount = new BigDecimal(mealItem.getGrams().stripTrailingZeros().toPlainString());
+            form.items.add(item);
+            // It was confirmed when first saved; don't ask again.
+            form.confirmLarge |= mealItem.getGrams().compareTo(MealService.LARGE_GRAMS) > 0;
+        }
+        return form;
+    }
+
     public static class Item {
         private String foodName;
         private BigDecimal amount;

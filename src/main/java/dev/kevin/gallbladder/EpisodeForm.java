@@ -15,6 +15,17 @@ public class EpisodeForm {
     private String location;
     private String note;
 
+    /** A form filled in from a saved episode, for editing. */
+    static EpisodeForm from(Episode episode) {
+        EpisodeForm form = new EpisodeForm();
+        form.startedAt = episode.getStartedAt();
+        form.endedAt = episode.getEndedAt();
+        form.severity = episode.getSeverity();
+        form.location = episode.getLocation();
+        form.note = episode.getNote();
+        return form;
+    }
+
     public LocalDateTime getStartedAt() { return startedAt; }
     public void setStartedAt(LocalDateTime startedAt) { this.startedAt = startedAt; }
     public LocalDateTime getEndedAt() { return endedAt; }

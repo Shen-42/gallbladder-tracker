@@ -1,10 +1,12 @@
 package dev.kevin.gallbladder;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
 @Entity
+@SQLRestriction("deleted_at is null") // deleted episodes are hidden from every query until restored
 public class Episode {
 
     @Id
@@ -24,6 +26,8 @@ public class Episode {
 
     private String note;
 
+    private LocalDateTime deletedAt;
+
     protected Episode() {
     }
 
@@ -33,6 +37,18 @@ public class Episode {
         this.severity = severity;
         this.location = location;
         this.note = note;
+    }
+
+    public void update(LocalDateTime startedAt, LocalDateTime endedAt, int severity, String location, String note) {
+        this.startedAt = startedAt;
+        this.endedAt = endedAt;
+        this.severity = severity;
+        this.location = location;
+        this.note = note;
+    }
+
+    public void markDeleted(LocalDateTime when) {
+        this.deletedAt = when;
     }
 
     public Long getId() {

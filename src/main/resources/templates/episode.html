@@ -10,6 +10,7 @@
 <nav th:replace="~{fragments :: nav}"></nav>
 <main>
     <h1 th:text="${#temporals.format(episode.startedAt, 'EEE d MMM, HH:mm')}">Episode</h1>
+    <p><a th:href="@{/days/{d}(d=${episode.startedAt.toLocalDate()})}">&larr; Timeline for this day</a></p>
 
     <p class="total severity" th:text="|Severity ${episode.severity} / 10|">Severity</p>
 
@@ -20,6 +21,13 @@
         <li th:if="${episode.location != null}" th:text="${episode.location}"></li>
     </ul>
     <p th:if="${episode.note != null}" th:text="${episode.note}"></p>
+
+    <div class="actions">
+        <a class="button" th:href="@{/episodes/{id}/edit(id=${episode.id})}">Edit</a>
+        <form th:action="@{/episodes/{id}/delete(id=${episode.id})}" method="post">
+            <button type="submit" class="danger">Delete</button>
+        </form>
+    </div>
 
     <a class="button" th:href="@{/episodes/new}">Log another episode</a>
 </main>

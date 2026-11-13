@@ -35,3 +35,9 @@ input[type=radio] { width: auto; margin: 0 auto; }
 .timeline .over a { background: #fbe9e7; border-color: #e5a39a; }
 .timeline .flag { color: #b00020; }
 .timeline .episode a { border-left: 4px solid #7b52b9; }
+.actions, .form-buttons { display: flex; gap: 1rem; align-items: center; margin-top: 1rem; }
+.actions *, .form-buttons button { margin-top: 0; }
+button.danger { background: #b00020; }
+.undo { display: flex; gap: 1rem; align-items: center; justify-content: space-between;
+    padding: .5rem .75rem; border-radius: 6px; background: #fff7d6; }
+.undo button { margin-top: 0; }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -40,6 +41,36 @@ public class EpisodeController {
     String create(@ModelAttribute EpisodeForm episodeForm, BindingResult result) {
         Optional<Episode> episode = episodeService.log(episodeForm, result);
         return episode.map(e -> "redirect:/episodes/" + e.getId()).orElse("episode-form");
+    }
+
+    @GetMapping("/episodes/{id}/edit")
+    String edit(@PathVariable Long id, Model model) {
+        Episode episode = episodes.findById(id).orElseThrow(NotFoundException::new);
+        model.addAttribute("episodeForm", EpisodeForm.from(episode));
+        model.addAttribute("episodeId", id);
+        return "episode-form";
+    }
+
+    @PostMapping("/episodes/{id}")
+    String update(@PathVariable Long id, @ModelAttribute EpisodeForm episodeForm, BindingResult result, Model model) {
+        if (episodeService.update(id, episodeForm, result).isPresent()) {
+            return "redirect:/episodes/" + id;
+        }
+        model.addAttribute("episodeId", id);
+        return "episode-form";
+    }
+
+    @PostMapping("/episodes/{id}/delete")
+    String delete(@PathVariable Long id, RedirectAttributes redirect) {
+        Episode episode = episodeService.delete(id);
+        redirect.addFlashAttribute("undo", new Undo(
+                "Deleted the episode at " + episode.getStartedAt().toLocalTime() + ".", "/episodes/" + id + "/restore"));
+        return "redirect:/days/" + episode.getStartedAt().toLocalDate();
+    }
+
+    @PostMapping("/episodes/{id}/restore")
+    String restore(@PathVariable Long id) {
+        return "redirect:/days/" + episodeService.restore(id).getStartedAt().toLocalDate();
     }
 
     @GetMapping("/episodes/{id}")
