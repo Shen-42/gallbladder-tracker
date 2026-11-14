@@ -16,11 +16,21 @@ public class Settings {
 
     private BigDecimal fatThresholdGrams;
 
+    private Integer lookbackHours;
+
     public BigDecimal getFatThresholdGrams() {
         return fatThresholdGrams;
     }
 
     public void setFatThresholdGrams(BigDecimal fatThresholdGrams) {
         this.fatThresholdGrams = fatThresholdGrams;
+    }
+
+    public Integer getLookbackHours() {
+        return lookbackHours;
+    }
+
+    public void setLookbackHours(Integer lookbackHours) {
+        this.lookbackHours = lookbackHours;
     }
 }

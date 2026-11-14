@@ -13,10 +13,12 @@ import java.time.LocalDate;
 public class TimelineController {
 
     private final TimelineService timeline;
+    private final SettingsRepository settings;
     private final Clock clock;
 
-    public TimelineController(TimelineService timeline, Clock clock) {
+    public TimelineController(TimelineService timeline, SettingsRepository settings, Clock clock) {
         this.timeline = timeline;
+        this.settings = settings;
         this.clock = clock;
     }
 
@@ -31,6 +33,7 @@ public class TimelineController {
         model.addAttribute("date", date);
         model.addAttribute("isToday", date.equals(today));
         model.addAttribute("entries", timeline.day(date));
+        model.addAttribute("threshold", settings.current().getFatThresholdGrams());
         model.addAttribute("previous", date.minusDays(1));
         // Future times can't be logged, so there is nothing to see after today.
         model.addAttribute("next", date.isBefore(today) ? date.plusDays(1) : null);

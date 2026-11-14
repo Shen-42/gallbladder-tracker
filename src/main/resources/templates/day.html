@@ -31,7 +31,8 @@
             <a th:if="${e.meal != null}" th:href="@{/meals/{id}(id=${e.meal.id})}">
                 <time th:text="${#temporals.format(e.at, 'HH:mm')}">08:00</time>
                 <span class="what" th:text="${#strings.listJoin(e.meal.items.![food.name], ', ')}">Meal</span>
-                <span class="fat" th:text="|${#numbers.formatDecimal(e.meal.fatTotal(), 1, 1)} g fat|">0 g fat</span>
+                <span class="fat" th:with="fat=${#numbers.formatDecimal(e.meal.fatTotal(), 1, 1)}"
+                      th:text="${threshold == null} ? |${fat} g fat| : |${fat} / ${#numbers.formatDecimal(threshold, 1, 1)} g fat|">0 g fat</span>
                 <strong th:if="${e.overThreshold}" class="flag">over limit</strong>
             </a>
             <a th:if="${e.episode != null}" th:href="@{/episodes/{id}(id=${e.episode.id})}">

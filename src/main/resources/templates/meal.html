@@ -14,7 +14,7 @@
 
     <p class="total" th:classappend="${over} ? 'over'">
         <strong th:text="|${#numbers.formatDecimal(total, 1, 1)} g fat|">0 g fat</strong>
-        <span th:if="${threshold == null}">· No fat limit set yet.</span>
+        <span th:if="${threshold == null}">· No fat limit set yet. <a th:href="@{/settings}">Set one</a></span>
         <span th:if="${over}"
               th:text="|· Over your ${#numbers.formatDecimal(threshold, 1, 1)} g limit by ${#numbers.formatDecimal(total - threshold, 1, 1)} g|"></span>
         <span th:if="${threshold != null and !over}"

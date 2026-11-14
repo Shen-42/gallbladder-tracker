@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Settings</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main>
+    <h1>Settings</h1>
+
+    <p class="saved" th:if="${saved}">Settings saved.</p>
+
+    <form th:action="@{/settings}" th:object="${settings}" method="post">
+        <label>Fat limit per meal <small>grams</small>
+            <input type="number" step="any" min="0" inputmode="decimal" th:field="*{fatThresholdGrams}">
+        </label>
+        <p class="hint">The most fat one meal should have, from your doctor or dietitian. Example: 15</p>
+        <p class="error" th:if="${#fields.hasErrors('fatThresholdGrams')}" th:errors="*{fatThresholdGrams}"></p>
+
+        <label>Lookback window <small>hours</small>
+            <input type="number" step="1" min="1" inputmode="numeric" th:field="*{lookbackHours}">
+        </label>
+        <p class="hint">How long before an episode a meal counts as possibly related. Example: 6</p>
+        <p class="error" th:if="${#fields.hasErrors('lookbackHours')}" th:errors="*{lookbackHours}"></p>
+
+        <div class="form-buttons">
+            <button type="submit">Save settings</button>
+            <a th:href="@{/days}">Cancel</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>
