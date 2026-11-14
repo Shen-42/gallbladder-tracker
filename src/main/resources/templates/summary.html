@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Summary</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main th:with="limit=${s.threshold == null} ? null : ${#numbers.formatDecimal(s.threshold, 1, 1)}">
+    <h1>Summary</h1>
+
+    <p th:if="${s.threshold == null}">
+        Set a fat limit to split meals into over and within it.
+        <a th:href="@{/settings}">Go to Settings</a>
+    </p>
+
+    <table class="two-by-two" th:if="${s.threshold != null}">
+        <caption th:text="|Meals followed by pain within ${s.lookbackHours} h|">Meals followed by pain</caption>
+        <thead>
+        <tr><th></th><th>Followed by pain</th><th>Not followed</th><th>Meals</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th th:text="|Over ${limit} g|">Over</th>
+            <td><span th:text="${s.overFollowed}">0</span>
+                <small th:if="${s.showPercentages() and s.over() > 0}" th:text="|${s.percent(s.overFollowed, s.over())}%|"></small></td>
+            <td><span th:text="${s.overNotFollowed}">0</span>
+                <small th:if="${s.showPercentages() and s.over() > 0}" th:text="|${s.percent(s.overNotFollowed, s.over())}%|"></small></td>
+            <td th:text="${s.over()}">0</td>
+        </tr>
+        <tr>
+            <th th:text="|Within ${limit} g|">Within</th>
+            <td><span th:text="${s.withinFollowed}">0</span>
+                <small th:if="${s.showPercentages() and s.within() > 0}" th:text="|${s.percent(s.withinFollowed, s.within())}%|"></small></td>
+            <td><span th:text="${s.withinNotFollowed}">0</span>
+                <small th:if="${s.showPercentages() and s.within() > 0}" th:text="|${s.percent(s.withinNotFollowed, s.within())}%|"></small></td>
+            <td th:text="${s.within()}">0</td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr><th>All meals</th><td th:text="${s.followed()}">0</td><td th:text="${s.notFollowed()}">0</td><td th:text="${s.meals()}">0</td></tr>
+        </tfoot>
+    </table>
+
+    <p th:text="|From ${s.meals()} meals and ${s.episodes} episodes.|">From 0 meals and 0 episodes.</p>
+    <p class="muted" th:unless="${s.showPercentages()}"
+       th:text="|Percentages appear once you have logged ${T(dev.kevin.gallbladder.SummaryService).MIN_EPISODES_FOR_PERCENTAGES} episodes. Until then they would swing too much to mean anything.|"></p>
+    <p><a th:href="@{/summary/help}">How this is calculated, and why small counts are unreliable</a></p>
+
+    <details>
+        <summary>More details</summary>
+        <ul class="items">
+            <li th:if="${s.medianOnset != null}"
+                th:text="|Median time from meal to pain: ${s.medianOnsetText()} (from ${s.followed()} meals followed by pain)|"></li>
+            <li th:if="${s.medianOnset == null}">Median time from meal to pain: none yet, no meal has been followed by pain.</li>
+            <li th:if="${s.pendingMeals > 0}"
+                th:text="|${s.pendingMeals} recent meals are not counted yet, because their ${s.lookbackHours} h window has not ended.|"></li>
+            <li>Lookback window: <span th:text="|${s.lookbackHours} hours.|"></span> <a th:href="@{/settings}">Change</a></li>
+        </ul>
+    </details>
+</main>
+</body>
+</html>

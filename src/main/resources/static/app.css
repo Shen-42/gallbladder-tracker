@@ -43,3 +43,11 @@ button.danger { background: #b00020; }
 .undo button { margin-top: 0; }
 .hint { margin: .25rem 0; font-size: .9rem; color: #666; }
 .saved { padding: .5rem .75rem; border-radius: 6px; background: #e8f3ea; }
+.two-by-two { width: 100%; border-collapse: collapse; background: #fff; margin: 1rem 0; }
+.two-by-two caption { text-align: left; font-weight: 600; padding-bottom: .5rem; }
+.two-by-two th, .two-by-two td { border: 1px solid #ddd; padding: .5rem; text-align: center; }
+.two-by-two tbody th, .two-by-two tfoot th { text-align: left; }
+.two-by-two td { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.two-by-two small { display: block; font-size: .8rem; color: #666; }
+.two-by-two tfoot td { font-size: 1rem; color: #666; }
+details summary { cursor: pointer; color: #2a5d9f; }

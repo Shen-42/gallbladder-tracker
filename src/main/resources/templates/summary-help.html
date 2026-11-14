@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>How the summary works</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main>
+    <h1>How the summary works</h1>
+    <p><a th:href="@{/summary}">&larr; Back to the summary</a></p>
+
+    <h2>The table</h2>
+    <p>Each meal is counted once. It is <strong>followed by pain</strong> if an episode started at the time of the
+        meal or up to the lookback window after it (set in Settings, 6 hours unless you change it).
+        It is <strong>over</strong> if its fat total is above your limit; a meal exactly at the limit counts as within.</p>
+    <p>A meal from the last few hours with no episode yet is left out until its window ends, because pain could
+        still follow. Deleted meals and episodes are left out.</p>
+
+    <h2>Median time to pain</h2>
+    <p>For every meal followed by pain, the app takes the time from the meal to the first episode after it.
+        The median is the middle of those times: half were shorter, half longer.</p>
+
+    <h2>Why small counts are unreliable</h2>
+    <p>With few episodes, one more or one fewer changes a percentage a lot: 1 of 2 meals is 50%, 2 of 2 is 100%.
+        That is why percentages stay hidden until you have logged <span th:text="${minEpisodes}">5</span> episodes,
+        and even after that a difference between the rows can be chance.</p>
+    <p>One episode can follow several meals, so it can be counted more than once. Things other than fat, such as
+        meal size or timing, can also matter.</p>
+
+    <p class="muted">This is a record to discuss with your doctor, not a diagnosis.</p>
+</main>
+</body>
+</html>

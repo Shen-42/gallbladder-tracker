@@ -25,11 +25,11 @@ class SettingsServiceTest {
     }
 
     @Test
-    void nothingIsSetByDefault() {
+    void noThresholdByDefaultAndLookbackDefaultsTo6Hours() {
         Settings current = settings.current();
 
         assertThat(current.getFatThresholdGrams()).isNull();
-        assertThat(current.getLookbackHours()).isNull();
+        assertThat(current.getLookbackHours()).isEqualTo(Settings.DEFAULT_LOOKBACK_HOURS);
     }
 
     @Test
@@ -44,13 +44,13 @@ class SettingsServiceTest {
     }
 
     @Test
-    void valuesCanBeClearedAgain() {
+    void clearingGoesBackToNoThresholdAndTheDefaultLookback() {
         save("15", 6);
         save(null, null);
         reloadFromDatabase();
 
         assertThat(settings.current().getFatThresholdGrams()).isNull();
-        assertThat(settings.current().getLookbackHours()).isNull();
+        assertThat(settings.current().getLookbackHours()).isEqualTo(Settings.DEFAULT_LOOKBACK_HOURS);
     }
 
     @Test

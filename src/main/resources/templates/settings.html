@@ -23,7 +23,7 @@
         <label>Lookback window <small>hours</small>
             <input type="number" step="1" min="1" inputmode="numeric" th:field="*{lookbackHours}">
         </label>
-        <p class="hint">How long before an episode a meal counts as possibly related. Example: 6</p>
+        <p class="hint">How long before an episode a meal counts as possibly related. Default: 6</p>
         <p class="error" th:if="${#fields.hasErrors('lookbackHours')}" th:errors="*{lookbackHours}"></p>
 
         <div class="form-buttons">

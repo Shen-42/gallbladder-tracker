@@ -17,7 +17,7 @@ public class SettingsService {
 
     /**
      * Checks the values, recording problems in {@code errors} next to the field they belong to.
-     * Saves nothing unless both are valid. Either value may be left empty.
+     * Saves nothing unless both are valid. Either value may be left empty; see {@link Settings} for what that means.
      */
     @Transactional
     public boolean save(Settings form, Errors errors) {
@@ -27,7 +27,7 @@ public class SettingsService {
         }
         Integer hours = form.getLookbackHours();
         if (hours != null && hours < 1) {
-            errors.rejectValue("lookbackHours", "positive", "Enter at least 1 hour, or leave it empty.");
+            errors.rejectValue("lookbackHours", "positive", "Enter at least 1 hour, or leave it empty to use " + Settings.DEFAULT_LOOKBACK_HOURS + ".");
         }
         if (errors.hasErrors()) {
             return false;
