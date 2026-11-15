@@ -14,10 +14,7 @@
         <small th:if="${isToday}" class="muted">today</small>
     </h1>
 
-    <form class="undo" th:if="${undo != null}" th:action="@{${undo.restoreUrl}}" method="post">
-        <span th:text="${undo.message}">Deleted.</span>
-        <button type="submit" class="secondary">Undo</button>
-    </form>
+    <form th:replace="~{fragments :: undo}"></form>
 
     <p class="day-links">
         <a th:href="@{/days/{d}(d=${previous})}">&larr; Previous day</a>

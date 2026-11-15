@@ -13,7 +13,7 @@
     <p><a th:href="@{/summary}">&larr; Back to the summary</a></p>
 
     <p th:unless="${r.enoughEpisodes}" class="muted"
-       th:text="|Results appear once you have logged ${minEpisodes} episodes and some meals have been followed by pain. Until then any result would be chance.|"></p>
+       th:text="|Results appear once you have logged ${minEpisodes} pain entries and some meals have been followed by pain. Until then any result would be chance.|"></p>
 
     <th:block th:if="${r.enoughEpisodes}">
         <p th:text="|${r.followed} of ${r.meals} meals were followed by pain within ${r.lookbackHours} h. Foods eaten in at least ${minMeals} meals, most unusual first:|"></p>

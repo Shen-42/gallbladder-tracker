@@ -11,7 +11,7 @@
 <nav th:replace="~{fragments :: nav}"></nav>
 <main>
     <h1>Fat per meal</h1>
-    <p class="muted" th:text="|Last ${days} days: ${chart.meals.size()} meals, ${chart.episodes.size()} episodes.|">Last 30 days.</p>
+    <p class="muted" th:text="|Last ${days} days: ${chart.meals.size()} meals, ${chart.episodes.size()} pain entries.|">Last 30 days.</p>
     <p th:if="${chart.threshold == null}">
         No fat limit set, so no limit line. <a th:href="@{/settings}">Set one</a>
     </p>

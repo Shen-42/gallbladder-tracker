@@ -3,13 +3,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Episode</title>
+    <title>Pain</title>
     <link rel="stylesheet" th:href="@{/app.css}">
 </head>
 <body>
 <nav th:replace="~{fragments :: nav}"></nav>
 <main>
-    <h1 th:text="${#temporals.format(episode.startedAt, 'EEE d MMM, HH:mm')}">Episode</h1>
+    <form th:replace="~{fragments :: undo}"></form>
+    <h1 th:text="${#temporals.format(episode.startedAt, 'EEE d MMM, HH:mm')}">Pain</h1>
     <p><a th:href="@{/days/{d}(d=${episode.startedAt.toLocalDate()})}">&larr; Timeline for this day</a></p>
 
     <p class="incomplete-note" th:if="${episode.incomplete}">
@@ -33,7 +34,7 @@
         </form>
     </div>
 
-    <a class="button" th:href="@{/episodes/new}">Log another episode</a>
+    <a class="button" th:href="@{/episodes/new}">Log pain again</a>
 </main>
 </body>
 </html>

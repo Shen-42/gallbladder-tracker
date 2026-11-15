@@ -14,11 +14,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 @Controller
 public class EpisodeController {
+
+    private static final DateTimeFormatter HH_MM = DateTimeFormatter.ofPattern("HH:mm");
 
     private final EpisodeService episodeService;
     private final EpisodeRepository episodes;
@@ -45,9 +48,13 @@ public class EpisodeController {
     }
 
     @PostMapping("/episodes/quick")
-    String quick(@RequestParam(required = false) Integer severity) {
-        return episodeService.quickLog(severity).map(e -> "redirect:/episodes/" + e.getId())
+    String quick(@RequestParam(required = false) Integer severity, RedirectAttributes redirect) {
+        Episode episode = episodeService.quickLog(severity)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Severity must be 0 to 10."));
+        // A mis-tap is one tap from gone; deleting it then offers its own undo.
+        redirect.addFlashAttribute("undo", new Undo("Saved pain " + episode.getSeverity() + "/10 at "
+                + episode.getStartedAt().format(HH_MM) + ".", "/episodes/" + episode.getId() + "/delete"));
+        return "redirect:/episodes/" + episode.getId();
     }
 
     @GetMapping("/episodes/{id}/edit")
@@ -71,7 +78,7 @@ public class EpisodeController {
     String delete(@PathVariable Long id, RedirectAttributes redirect) {
         Episode episode = episodeService.delete(id);
         redirect.addFlashAttribute("undo", new Undo(
-                "Deleted the episode at " + episode.getStartedAt().toLocalTime() + ".", "/episodes/" + id + "/restore"));
+                "Deleted the pain entry at " + episode.getStartedAt().format(HH_MM) + ".", "/episodes/" + id + "/restore"));
         return "redirect:/days/" + episode.getStartedAt().toLocalDate();
     }
 

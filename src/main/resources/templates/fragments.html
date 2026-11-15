@@ -2,13 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <body>
 <nav th:fragment="nav">
-    <a th:href="@{/meals/new}">Log meal</a>
-    <a th:href="@{/episodes/new}">Log episode</a>
-    <a th:href="@{/days}">Timeline</a>
-    <a th:href="@{/chart}">Chart</a>
-    <a th:href="@{/summary}">Summary</a>
-    <a th:href="@{/settings}">Settings</a>
-    <form class="logout" th:action="@{/logout}" method="post"><button type="submit" class="link">Log out</button></form>
+    <a th:href="@{/meals/new}" th:attr="aria-current=${navSection == 'meal'} ? 'page' : null">+ Meal</a>
+    <a th:href="@{/episodes/new}" th:attr="aria-current=${navSection == 'pain'} ? 'page' : null">+ Pain</a>
+    <a th:href="@{/days}" th:attr="aria-current=${navSection == 'timeline'} ? 'page' : null">Timeline</a>
+    <a th:href="@{/chart}" th:attr="aria-current=${navSection == 'chart'} ? 'page' : null">Chart</a>
+    <a th:href="@{/summary}" th:attr="aria-current=${navSection == 'summary'} ? 'page' : null">Summary</a>
+    <a th:href="@{/settings}" th:attr="aria-current=${navSection == 'settings'} ? 'page' : null">Settings</a>
 </nav>
+
+<form th:fragment="undo" class="undo" th:if="${undo != null}" th:action="@{${undo.restoreUrl}}" method="post">
+    <span th:text="${undo.message}">Deleted.</span>
+    <button type="submit" class="secondary">Undo</button>
+</form>
 </body>
 </html>

@@ -30,8 +30,6 @@
     </section>
 
     <form th:action="${mealId == null} ? @{/meals} : @{/meals/{id}(id=${mealId})}" th:object="${mealForm}" method="post">
-        <p class="error" th:each="e : ${#fields.globalErrors()}" th:text="${e}"></p>
-
         <label>When
             <input type="datetime-local" th:field="*{eatenAt}">
         </label>
@@ -42,6 +40,7 @@
                 <label>Food
                     <input list="foods" autocomplete="off" th:field="*{items[__${s.index}__].foodName}">
                 </label>
+                <p class="error" th:if="${s.first}" th:each="e : ${#fields.globalErrors()}" th:text="${e}"></p>
                 <div class="usda" hidden aria-live="polite"></div>
                 <p class="error" th:if="${#fields.hasErrors('items[__${s.index}__].foodName')}"
                    th:errors="*{items[__${s.index}__].foodName}"></p>
@@ -61,23 +60,27 @@
                 <p class="error" th:if="${#fields.hasErrors('items[__${s.index}__].amount')}"
                    th:errors="*{items[__${s.index}__].amount}"></p>
 
-                <label>Fat per 100 g <small>only for a food you haven't logged before</small>
-                    <input type="number" step="any" min="0" max="100" inputmode="decimal"
-                           th:field="*{items[__${s.index}__].fatPer100g}">
-                </label>
-                <p class="error" th:if="${#fields.hasErrors('items[__${s.index}__].fatPer100g')}"
-                   th:errors="*{items[__${s.index}__].fatPer100g}"></p>
+                <div class="fat-field">
+                    <label>Fat per 100 g <small>new food, so enter it once</small>
+                        <input type="number" step="any" min="0" max="100" inputmode="decimal"
+                               th:field="*{items[__${s.index}__].fatPer100g}">
+                    </label>
+                    <p class="error" th:if="${#fields.hasErrors('items[__${s.index}__].fatPer100g')}"
+                       th:errors="*{items[__${s.index}__].fatPer100g}"></p>
+                </div>
 
-                <label>Grams per portion <small>only when using portions and the food has none yet</small>
-                    <input type="number" step="any" min="0" inputmode="decimal"
-                           th:field="*{items[__${s.index}__].portionGrams}">
-                </label>
-                <p class="error" th:if="${#fields.hasErrors('items[__${s.index}__].portionGrams')}"
-                   th:errors="*{items[__${s.index}__].portionGrams}"></p>
+                <div class="portion-field">
+                    <label>Grams per portion <small>this food has no portion size yet</small>
+                        <input type="number" step="any" min="0" inputmode="decimal"
+                               th:field="*{items[__${s.index}__].portionGrams}">
+                    </label>
+                    <p class="error" th:if="${#fields.hasErrors('items[__${s.index}__].portionGrams')}"
+                       th:errors="*{items[__${s.index}__].portionGrams}"></p>
+                </div>
             </fieldset>
         </div>
         <datalist id="foods">
-            <option th:each="name : ${foodNames}" th:value="${name}"></option>
+            <option th:each="f : ${foods}" th:value="${f.name}" th:data-portion="${f.portionGrams != null}"></option>
         </datalist>
 
         <button type="button" id="add-item" class="secondary">+ Add another food</button>
@@ -109,6 +112,7 @@
             el.value = el.tagName === 'SELECT' ? 'GRAMS' : '';
         });
         document.getElementById('items').appendChild(copy);
+        showNeededFields(copy);
         copy.querySelector('input').focus();
     });
 
@@ -117,6 +121,22 @@
     const datalist = document.getElementById('foods');
     const known = new Set([...datalist.options].map(o => o.value.toLowerCase()));
     const timers = new WeakMap();
+    const withPortion = new Set([...datalist.options].filter(o => o.dataset.portion === 'true')
+        .map(o => o.value.toLowerCase()));
+
+    // Fat per 100 g is only asked for a new food, grams per portion only for portions of a food without a
+    // portion size. A field stays visible if it has a value or an error. Without JavaScript, both always show.
+    function showNeededFields(row) {
+        const name = row.querySelector('[name$=".foodName"]').value.trim().toLowerCase();
+        const isNew = name !== '' && !known.has(name);
+        const portions = row.querySelector('[name$=".unit"]').value === 'PORTIONS';
+        const keep = field => field.querySelector('input').value !== '' || field.querySelector('.error') !== null;
+        const fat = row.querySelector('.fat-field'), portion = row.querySelector('.portion-field');
+        fat.hidden = !(isNew || keep(fat));
+        portion.hidden = !((portions && (isNew || !withPortion.has(name))) || keep(portion));
+    }
+    document.querySelectorAll('#items .item').forEach(showNeededFields);
+    document.getElementById('items').addEventListener('change', event => showNeededFields(event.target.closest('.item')));
 
     function show(box, ...children) {
         box.replaceChildren(...children);
@@ -181,6 +201,7 @@
             row.querySelector('[name$=".foodName"]').value = food.name;
             row.querySelector('[name$=".fatPer100g"]').value = food.fatPer100g;
             known.add(food.name.toLowerCase());
+            showNeededFields(row);
             const option = document.createElement('option');
             option.value = food.name;
             datalist.append(option);

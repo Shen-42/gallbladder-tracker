@@ -22,6 +22,6 @@ class SummaryPageTest {
     void summaryRendersBeforeFiveEpisodes() throws Exception {
         mvc.perform(get("/summary").with(user("me")))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Percentages appear once you have logged 5 episodes")));
+                .andExpect(content().string(containsString("Percentages appear once you have logged 5 pain entries")));
     }
 }
