@@ -32,7 +32,7 @@ public class TimelineService {
     public List<Entry> day(LocalDate date) {
         LocalDateTime from = date.atStartOfDay();
         LocalDateTime to = date.plusDays(1).atStartOfDay();
-        BigDecimal threshold = settings.findById(Settings.ID).map(Settings::getFatThresholdGrams).orElse(null);
+        BigDecimal threshold = settings.current().getFatThresholdGrams();
 
         List<Entry> entries = new ArrayList<>();
         for (Meal meal : meals.findEatenBetween(from, to)) {

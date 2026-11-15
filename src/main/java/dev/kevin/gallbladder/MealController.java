@@ -99,7 +99,7 @@ public class MealController {
     @GetMapping("/meals/{id}")
     String show(@PathVariable Long id, Model model) {
         Meal meal = meals.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        BigDecimal threshold = settings.findById(Settings.ID).map(Settings::getFatThresholdGrams).orElse(null);
+        BigDecimal threshold = settings.current().getFatThresholdGrams();
         model.addAttribute("meal", meal);
         model.addAttribute("threshold", threshold);
         return "meal";
@@ -117,8 +117,6 @@ public class MealController {
     private String formView(Model model, boolean askConfirmLarge, Long mealId) {
         model.addAttribute("foods", foods.findAll(Sort.by("name")));
         model.addAttribute("askConfirmLarge", askConfirmLarge);
-        model.addAttribute("noFatLimit",
-                settings.findById(Settings.ID).map(Settings::getFatThresholdGrams).isEmpty());
         model.addAttribute("mealId", mealId);
         model.addAttribute("recentMeals", mealId == null ? mealService.recent(RECENT_MEALS) : List.of());
         return "meal-form";

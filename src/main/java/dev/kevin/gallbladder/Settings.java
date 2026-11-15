@@ -6,13 +6,15 @@ import jakarta.persistence.Id;
 import java.math.BigDecimal;
 
 /**
- * Single-row table. The threshold has no default on purpose: it should come from a doctor or dietitian.
- * The lookback window has an arbitrary default so the summary works before anything is set.
+ * Single-row table. The fat limit defaults to 10 g, the top of the 5 to 10 g per meal often advised during a
+ * cholecystitis flare-up or recovery; a doctor or dietitian may give a different one. The lookback window has an
+ * arbitrary default so the summary works before anything is set.
  */
 @Entity
 public class Settings {
 
     public static final long ID = 1L;
+    public static final BigDecimal DEFAULT_FAT_THRESHOLD_GRAMS = BigDecimal.TEN;
     public static final int DEFAULT_LOOKBACK_HOURS = 6;
 
     @Id
@@ -22,8 +24,9 @@ public class Settings {
 
     private Integer lookbackHours;
 
+    /** Never null: an empty value means {@link #DEFAULT_FAT_THRESHOLD_GRAMS}. */
     public BigDecimal getFatThresholdGrams() {
-        return fatThresholdGrams;
+        return fatThresholdGrams != null ? fatThresholdGrams : DEFAULT_FAT_THRESHOLD_GRAMS;
     }
 
     public void setFatThresholdGrams(BigDecimal fatThresholdGrams) {

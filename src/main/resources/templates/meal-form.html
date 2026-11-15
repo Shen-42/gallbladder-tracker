@@ -16,9 +16,6 @@
 <main>
     <h1 th:text="${mealId == null} ? 'Log a meal' : 'Edit meal'">Log a meal</h1>
 
-    <p class="notice" th:if="${noFatLimit}">No fat limit set yet, so meals can't be flagged as over it.
-        <a th:href="@{/settings}">Set one in Settings</a></p>
-
     <section th:unless="${recentMeals.isEmpty()}">
         <h2>Same as before</h2>
         <p class="hint">Tap a meal to log it again, eaten now.</p>

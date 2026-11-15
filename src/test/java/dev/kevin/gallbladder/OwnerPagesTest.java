@@ -46,8 +46,7 @@ class OwnerPagesTest {
                 .andExpect(content().string(containsString("so there is nothing to draw yet")));
         mvc.perform(get("/summary").with(user("me")))
                 .andExpect(content().string(containsString("Nothing to summarise yet")));
-        mvc.perform(get("/meals/new").with(user("me")))
-                .andExpect(content().string(containsString("No fat limit set yet")));
+        assertThat(new Settings().getFatThresholdGrams()).isEqualByComparingTo("10");
     }
 
     @Test

@@ -38,9 +38,10 @@
     const from = /*[[${fromMillis}]]*/ 0, to = /*[[${toMillis}]]*/ 0;
 
     const datasets = [
-        {label: 'Meal fat (g)', data: meals, yAxisID: 'fat', backgroundColor: '#2a5d9f', pointRadius: 4},
+        // clip: false so points on the edges (today's meals, pain of 10) aren't cut in half.
+        {label: 'Meal fat (g)', data: meals, yAxisID: 'fat', backgroundColor: '#2a5d9f', pointRadius: 4, clip: false},
         {label: 'Pain (0–10)', data: episodes, yAxisID: 'pain', backgroundColor: '#7b52b9',
-            pointStyle: 'triangle', pointRadius: 7},
+            pointStyle: 'triangle', pointRadius: 7, clip: false},
     ];
     if (threshold !== null) {
         datasets.push({label: 'Fat limit', type: 'line', data: [{x: from, y: +threshold}, {x: to, y: +threshold}],
@@ -55,9 +56,10 @@
         data: {datasets},
         options: {
             maintainAspectRatio: false,
+            layout: {padding: {top: 10, right: 10}},
             scales: {
                 x: {min: from, max: to - 1, ticks: {callback: day, maxTicksLimit: 6}},
-                fat: {position: 'left', beginAtZero: true, title: {display: true, text: 'Fat (g)'}},
+                fat: {position: 'left', beginAtZero: true, grace: '10%', title: {display: true, text: 'Fat (g)'}},
                 pain: {position: 'right', min: 0, max: 10, grid: {drawOnChartArea: false},
                     title: {display: true, text: 'Pain'}},
             },

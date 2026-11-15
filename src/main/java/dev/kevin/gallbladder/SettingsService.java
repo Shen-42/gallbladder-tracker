@@ -23,7 +23,7 @@ public class SettingsService {
     public boolean save(Settings form, Errors errors) {
         BigDecimal threshold = form.getFatThresholdGrams();
         if (threshold != null && threshold.signum() <= 0) {
-            errors.rejectValue("fatThresholdGrams", "positive", "Enter a limit above 0 g, or leave it empty.");
+            errors.rejectValue("fatThresholdGrams", "positive", "Enter a limit above 0 g, or leave it empty for the default of 10 g.");
         }
         Integer hours = form.getLookbackHours();
         if (hours != null && hours < 1) {
