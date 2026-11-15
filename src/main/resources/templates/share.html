@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="referrer" content="no-referrer">
+    <title>Shared record</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<main th:with="limit=${s.threshold == null} ? null : ${#numbers.formatDecimal(s.threshold, 1, 1)}">
+    <h1>Meal fat and pain record</h1>
+    <p class="shared-banner">
+        Shared read-only by the patient<span th:if="${link.label != null}" th:text="| with ${link.label}|"></span>.
+        This link works until <strong th:text="${#temporals.format(link.expiresAt, 'd MMMM yyyy')}">date</strong>.
+    </p>
+
+    <h2>Meals followed by pain</h2>
+    <p th:if="${s.threshold == null}" class="muted">No fat limit per meal has been set, so meals aren't split by fat.</p>
+    <table th:replace="~{summary :: twoByTwo}"></table>
+    <ul class="items">
+        <li th:text="|From ${s.meals()} meals and ${s.episodes} episodes, all time.|"></li>
+        <li th:if="${s.medianOnset != null}"
+            th:text="|Median time from meal to pain onset: ${s.medianOnsetText()} (from ${s.followed()} meals followed by pain).|"></li>
+        <li th:unless="${s.showPercentages()}"
+            th:text="|Percentages are hidden until ${T(dev.kevin.gallbladder.SummaryService).MIN_EPISODES_FOR_PERCENTAGES} episodes have been logged.|"></li>
+    </ul>
+
+    <h2>Fat per meal, last 30 days</h2>
+    <th:block th:replace="~{chart :: chart}"></th:block>
+
+    <h2>Timeline</h2>
+    <p><a th:href="@{/share/{t}/days/{d}(t=${token},d=${today})}">Day-by-day meals and episodes &rarr;</a></p>
+
+    <h2>Report</h2>
+    <p class="hint">A one-page PDF with the counts, the chart and every episode in the dates you pick.</p>
+    <form th:action="@{/share/{t}/report.pdf(t=${token})}" method="get">
+        <div class="row">
+            <label>From <input type="date" name="from" th:value="${reportFrom}" th:max="${today}"></label>
+            <label>To <input type="date" name="to" th:value="${reportTo}" th:max="${today}"></label>
+        </div>
+        <p class="error" th:if="${reportError != null}" th:text="${reportError}"></p>
+        <button type="submit">Download PDF</button>
+    </form>
+
+    <p class="muted">Recorded by the patient with a personal tracking app. Fat values are estimates. Not a diagnosis.</p>
+</main>
+</body>
+</html>

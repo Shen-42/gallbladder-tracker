@@ -72,3 +72,13 @@ button.link { background: none; color: #2a5d9f; padding: .4rem 0; text-decoratio
 .food-results p { margin: .25rem 0 0; }
 nav .logout { margin-left: auto; }
 nav .logout button { margin: 0; padding: 0; }
+.share-links { list-style: none; padding: 0; }
+.share-links li { display: flex; justify-content: space-between; align-items: center; gap: .5rem;
+    background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: .5rem .75rem; margin: .4rem 0; }
+.share-links button { margin-top: 0; }
+.shared-banner { padding: .5rem .75rem; border-radius: 6px; background: #eef1f5; }
+.share-day { list-style: none; padding: 0; }
+.share-day > li { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: .6rem .75rem; margin: .4rem 0; }
+.share-day > li.over { background: #fbe9e7; border-color: #e5a39a; }
+.share-day > li.episode { border-left: 4px solid #7b52b9; }
+.share-day ul { margin: .25rem 0 0; padding-left: 1.2rem; }

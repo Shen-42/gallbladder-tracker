@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="referrer" content="no-referrer">
+    <title>Shared record: day</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+<main>
+    <h1 th:text="${#temporals.format(date, 'EEE d MMM yyyy')}">Day</h1>
+    <p><a th:href="@{/share/{t}(t=${token})}">&larr; Back to the summary</a></p>
+
+    <p class="day-links">
+        <a th:href="@{/share/{t}/days/{d}(t=${token},d=${previous})}">&larr; Previous day</a>
+        <a th:if="${next != null}" th:href="@{/share/{t}/days/{d}(t=${token},d=${next})}">Next day &rarr;</a>
+    </p>
+
+    <p th:if="${entries.isEmpty()}" class="muted">Nothing logged on this day.</p>
+
+    <ul class="share-day">
+        <li th:each="e : ${entries}" th:classappend="${e.episode != null} ? 'episode' : (${e.overThreshold} ? 'over')">
+            <th:block th:if="${e.meal != null}">
+                <strong th:text="|${#temporals.format(e.at, 'HH:mm')} Meal|">08:00 Meal</strong>
+                <span th:with="fat=${#numbers.formatDecimal(e.meal.fatTotal(), 1, 1)}"
+                      th:text="${threshold == null} ? |· ${fat} g fat| : |· ${fat} g fat (limit ${#numbers.formatDecimal(threshold, 1, 1)} g)|"></span>
+                <strong th:if="${e.overThreshold}" class="flag">over limit</strong>
+                <ul>
+                    <li th:each="i : ${e.meal.items}"
+                        th:text="|${i.food.name}: ${i.grams.stripTrailingZeros().toPlainString()} g, ${#numbers.formatDecimal(i.fatGrams(), 1, 1)} g fat|"></li>
+                </ul>
+                <p class="muted" th:if="${e.meal.note != null}" th:text="${e.meal.note}"></p>
+            </th:block>
+            <th:block th:if="${e.episode != null}">
+                <strong th:text="|${#temporals.format(e.at, 'HH:mm')} Pain ${e.episode.severity}/10|">12:00 Pain</strong>
+                <em th:if="${e.episode.incomplete}" class="incomplete">details not filled in</em>
+                <ul>
+                    <li th:if="${e.episode.location != null}" th:text="|Where: ${e.episode.location}|"></li>
+                    <li th:text="${e.episode.endedAt != null} ? |Ended ${#temporals.format(e.episode.endedAt, 'd MMM HH:mm')}| : 'No end time recorded'"></li>
+                </ul>
+                <p class="muted" th:if="${e.episode.note != null}" th:text="${e.episode.note}"></p>
+            </th:block>
+        </li>
+    </ul>
+</main>
+</body>
+</html>

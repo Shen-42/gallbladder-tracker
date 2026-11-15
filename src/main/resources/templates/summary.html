@@ -16,7 +16,7 @@
         <a th:href="@{/settings}">Go to Settings</a>
     </p>
 
-    <table class="two-by-two" th:if="${s.threshold != null}">
+    <table class="two-by-two" th:if="${s.threshold != null}" th:fragment="twoByTwo">
         <caption th:text="|Meals followed by pain within ${s.lookbackHours} h|">Meals followed by pain</caption>
         <thead>
         <tr><th></th><th>Followed by pain</th><th>Not followed</th><th>Meals</th></tr>

@@ -32,9 +32,57 @@
         </div>
     </form>
 
+    <h2 id="share">Share with your doctor</h2>
+    <p class="hint">A read-only link to the summary, chart, timeline and PDF report. No login is needed, so anyone
+        who has the link can see your record until it expires or you turn it off.</p>
+
+    <div class="saved" th:if="${newShareUrl != null}">
+        <p><strong>Link created.</strong> Copy it now; it won't be shown again.
+            Valid until <span th:text="${#temporals.format(newShare.expiresAt, 'd MMM yyyy')}"></span>.</p>
+        <input type="text" id="share-url" readonly th:value="${newShareUrl}" onclick="this.select()">
+        <button type="button" class="secondary" id="copy-share">Copy link</button>
+    </div>
+    <p class="saved" th:if="${revoked}">Link turned off. It no longer opens.</p>
+
+    <form th:action="@{/settings/share}" method="post">
+        <div class="row">
+            <label>Who it's for <small>optional</small>
+                <input type="text" name="label" placeholder="e.g. Dr. Wang" maxlength="100">
+            </label>
+            <label>Works for
+                <select name="days">
+                    <option value="7">7 days</option>
+                    <option value="30" selected>30 days</option>
+                    <option value="90">90 days</option>
+                </select>
+            </label>
+        </div>
+        <button type="submit">Create share link</button>
+    </form>
+
+    <ul class="share-links" th:unless="${shareLinks.isEmpty()}">
+        <li th:each="l : ${shareLinks}">
+            <span>
+                <strong th:text="${l.label != null} ? ${l.label} : 'Unnamed link'">Dr. Wang</strong>
+                <small class="muted" th:text="|until ${#temporals.format(l.expiresAt, 'd MMM yyyy')}|"></small>
+            </span>
+            <form th:action="@{/settings/share/{id}/revoke(id=${l.id})}" method="post">
+                <button type="submit" class="danger">Turn off</button>
+            </form>
+        </li>
+    </ul>
+
     <h2>Your data</h2>
     <p class="hint">Every meal and episode, as two CSV files in a zip. Opens in any spreadsheet.</p>
     <a class="button" th:href="@{/export.zip}" download>Download CSV</a>
 </main>
+<script>
+    const copy = document.getElementById('copy-share');
+    if (copy) copy.addEventListener('click', async () => {
+        const url = document.getElementById('share-url');
+        try { await navigator.clipboard.writeText(url.value); copy.textContent = 'Copied'; }
+        catch (e) { url.select(); copy.textContent = 'Press copy on your keyboard'; }
+    });
+</script>
 </body>
 </html>

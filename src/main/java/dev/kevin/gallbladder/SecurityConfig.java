@@ -10,6 +10,8 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
@@ -40,11 +42,17 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(a -> a
                         .requestMatchers("/login", "/app.css", "/error").permitAll()
+                        // Read-only pages for a doctor; ShareController checks the link's token on every request.
+                        .requestMatchers("/share/**").permitAll()
                         .anyRequest().authenticated())
                 // Kept in a cookie, not the server session, so forms still submit after the app restarts
                 // (Render's free plan restarts it after 15 idle minutes and on every deploy).
                 .csrf(c -> c.csrfTokenRepository(new CookieCsrfTokenRepository()))
                 .addFilterAfter(loadCsrfToken(), CsrfFilter.class)
+                // Share links carry their secret in the URL: never send it on to other sites, never index it.
+                .headers(h -> h
+                        .referrerPolicy(r -> r.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER))
+                        .addHeaderWriter(new StaticHeadersWriter("X-Robots-Tag", "noindex, nofollow")))
                 .formLogin(f -> f.loginPage("/login"))
                 .rememberMe(r -> r.rememberMeServices(rememberMe(users)))
                 .logout(l -> l.logoutSuccessUrl("/login?logout"))

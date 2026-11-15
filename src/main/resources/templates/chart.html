@@ -16,10 +16,10 @@
         No fat limit set, so no limit line. <a th:href="@{/settings}">Set one</a>
     </p>
 
+    <th:block th:fragment="chart">
     <div class="chart"><canvas id="chart" aria-label="Fat per meal over the last 30 days, with pain episodes"></canvas></div>
     <p class="hint">Dots are meals (fat in grams, left axis). Triangles are pain episodes (severity, right axis).
-        Tap a point to open it.</p>
-</main>
+        <th:block th:if="${chartLinks}">Tap a point to open it.</th:block></p>
 <script th:inline="javascript">
     const meals = /*[[${mealPoints}]]*/ [];
     const episodes = /*[[${episodePoints}]]*/ [];
@@ -61,5 +61,7 @@
         },
     });
 </script>
+    </th:block>
+</main>
 </body>
 </html>
