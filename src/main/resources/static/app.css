@@ -58,3 +58,4 @@ details summary { cursor: pointer; color: #2a5d9f; }
 .quick-options button { flex: 1; padding: .6rem 0; margin-top: .25rem; }
 .timeline .incomplete { color: #7b52b9; white-space: nowrap; }
 .incomplete-note { padding: .5rem .75rem; border-radius: 6px; background: #f1ecf8; }
+.chart { position: relative; height: 22rem; background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: .5rem; }
