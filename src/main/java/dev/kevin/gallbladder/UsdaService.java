@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -30,7 +31,9 @@ public class UsdaService {
     static final String BASE_URL = "https://api.nal.usda.gov/fdc/v1";
     /** FoodData Central's id for "Total lipid (fat)", reported per 100 g. */
     static final int FAT_NUTRIENT_ID = 1004;
-    private static final int PAGE_SIZE = 10;
+    /** More are fetched than shown, so the reranking below has plain matches to bring up. */
+    private static final int PAGE_SIZE = 25;
+    private static final int SHOWN = 10;
     private static final int CACHED_QUERIES = 200;
 
     /** A search hit with its fat per 100 g. */
@@ -83,7 +86,7 @@ public class UsdaService {
         return factory;
     }
 
-    /** Up to {@value #PAGE_SIZE} foods matching {@code query}, skipping any without a fat value. Repeated queries are answered from memory. */
+    /** Up to {@value #SHOWN} foods matching {@code query}, skipping any without a fat value. Repeated queries are answered from memory. */
     public List<Result> search(String query) {
         String key = query.trim().toLowerCase(Locale.ROOT);
         List<Result> cached = cache.get(key);
@@ -110,7 +113,8 @@ public class UsdaService {
             throw new UnavailableException("USDA search isn't reachable right now.", e);
         }
         List<Result> results = response == null || response.foods() == null ? List.of()
-                : response.foods().stream().map(UsdaService::toResult).filter(Objects::nonNull).toList();
+                : response.foods().stream().map(UsdaService::toResult).filter(Objects::nonNull)
+                        .sorted(Comparator.comparingInt(r -> rank(r.name(), key))).limit(SHOWN).toList();
         cache.put(key, results);
         return results;
     }
@@ -120,6 +124,19 @@ public class UsdaService {
     public Food save(Result picked) {
         return foods.findByNameIgnoreCase(picked.name())
                 .orElseGet(() -> foods.save(Food.fromUsda(picked.name(), picked.fatPer100g(), picked.fdcId())));
+    }
+
+    /**
+     * USDA names run from general to specific ("Egg, whole, raw"), so a name that starts with the query as its own
+     * term is the plainest match; next, the query as a later term ("Oil, avocado"); then the query as the start of a
+     * longer word. USDA's order is kept within each rank.
+     */
+    static int rank(String name, String query) {
+        String n = name.toLowerCase(Locale.ROOT);
+        if (n.equals(query) || n.startsWith(query + ",")) return 0;
+        if (n.contains(" " + query + ",") || n.contains("," + query + ",") || n.endsWith(" " + query)) return 1;
+        if (n.startsWith(query)) return 2;
+        return 3;
     }
 
     private static Result toResult(UsdaFood food) {

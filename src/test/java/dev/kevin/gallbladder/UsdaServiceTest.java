@@ -61,6 +61,20 @@ class UsdaServiceTest {
     }
 
     @Test
+    void plainMatchesComeFirst() {
+        server.expect(requestTo(startsWith(UsdaService.BASE_URL + "/foods/search"))).andRespond(withSuccess("""
+                {"foods": [
+                  {"fdcId": 1, "description": "Salad, with avocado", "foodNutrients": [{"nutrientId": 1004, "value": 9}]},
+                  {"fdcId": 2, "description": "Oil, avocado", "foodNutrients": [{"nutrientId": 1004, "value": 100}]},
+                  {"fdcId": 3, "description": "Avocados, raw, all commercial varieties",
+                   "foodNutrients": [{"nutrientId": 1004, "value": 14.7}]},
+                  {"fdcId": 4, "description": "Avocado, raw", "foodNutrients": [{"nutrientId": 1004, "value": 14.66}]}
+                ]}""", MediaType.APPLICATION_JSON));
+
+        assertThat(service.search("Avocado")).extracting(Result::fdcId).containsExactly(4L, 1L, 2L, 3L);
+    }
+
+    @Test
     void repeatedSearchesAreCached() {
         server.expect(once(), requestTo(startsWith(UsdaService.BASE_URL)))
                 .andRespond(withSuccess(FRIED_EGG, MediaType.APPLICATION_JSON));

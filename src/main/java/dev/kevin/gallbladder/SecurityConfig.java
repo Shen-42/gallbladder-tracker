@@ -53,7 +53,11 @@ public class SecurityConfig {
                 .headers(h -> h
                         .referrerPolicy(r -> r.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER))
                         .addHeaderWriter(new StaticHeadersWriter("X-Robots-Tag", "noindex, nofollow")))
-                .formLogin(f -> f.loginPage("/login"))
+                .formLogin(f -> f.loginPage("/login").failureHandler((request, response, e) -> {
+                    // Keep the username so only the password needs typing again.
+                    request.getSession().setAttribute(LoginController.LAST_USERNAME, request.getParameter("username"));
+                    response.sendRedirect(request.getContextPath() + "/login?error");
+                }))
                 .rememberMe(r -> r.rememberMeServices(rememberMe(users)))
                 .logout(l -> l.logoutSuccessUrl("/login?logout"))
                 .build();

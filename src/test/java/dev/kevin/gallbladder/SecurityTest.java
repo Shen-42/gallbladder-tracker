@@ -62,6 +62,16 @@ class SecurityTest {
     }
 
     @Test
+    void aFailedLoginKeepsTheUsername() throws Exception {
+        var session = (org.springframework.mock.web.MockHttpSession) mvc.perform(formLogin().user("me").password("nope"))
+                .andReturn().getRequest().getSession();
+        mvc.perform(get("/login").param("error", "").session(session))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("value=\"me\"")));
+        mvc.perform(get("/login").session(session))
+                .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("value=\"me\""))));
+    }
+
+    @Test
     void postsWithoutTheFormTokenAreRefused() throws Exception {
         mvc.perform(post("/episodes/quick").with(user("me")).param("severity", "5"))
                 .andExpect(status().isForbidden());

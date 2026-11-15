@@ -15,10 +15,15 @@
 
     <form th:action="@{/login}" method="post">
         <label>Username
-            <input type="text" name="username" autocomplete="username" autocapitalize="none" required autofocus>
+            <input type="text" name="username" autocomplete="username" autocapitalize="none" required
+                   th:value="${username}" th:attr="autofocus=${username == null} ? 'autofocus' : null">
         </label>
         <label>Password
-            <input type="password" name="password" autocomplete="current-password" required>
+            <input type="password" name="password" id="password" autocomplete="current-password" required
+                   th:attr="autofocus=${username != null} ? 'autofocus' : null">
+        </label>
+        <label class="confirm" id="show-password-label" hidden>
+            <input type="checkbox" id="show-password"> Show password
         </label>
         <label class="confirm">
             <input type="checkbox" name="remember" checked> Stay logged in on this device for 30 days
@@ -28,5 +33,12 @@
         </div>
     </form>
 </main>
+<script>
+    // Without JavaScript the box would do nothing, so it only appears with it.
+    document.getElementById('show-password-label').hidden = false;
+    document.getElementById('show-password').addEventListener('change', e => {
+        document.getElementById('password').type = e.target.checked ? 'text' : 'password';
+    });
+</script>
 </body>
 </html>
