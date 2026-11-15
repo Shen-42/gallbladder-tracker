@@ -3,6 +3,16 @@
 A single-user web app for logging meals with their fat content (and, later, symptom episodes)
 so you can see which meals came before pain.
 
+## Why I built this
+
+On a weekend trip with friends, I felt nauseous all day and had pain in the upper right of my abdomen that
+I tried to ignore. Early the next morning it was bad enough that I called an ambulance, and I was diagnosed
+with cholecystitis, an inflamed gallbladder. My doctor told me to watch what I ate, especially fat. I found
+that hard to do day to day, and my symptoms came back because of it.
+
+So I built this tracker for myself, to keep an honest record of what I eat and when the pain comes, and for
+anyone else who finds it hard to keep track of their diet with a gallbladder problem.
+
 > **Not medical advice.** This app keeps a record for you and your doctor. It does not diagnose,
 > recommend treatment, or tell you what to eat. Your fat limit should come from your doctor or dietitian.
 
