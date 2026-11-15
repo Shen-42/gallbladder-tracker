@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit meal</title>
+    <link rel="stylesheet" href="app.css">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#2a5d9f">
+<style>.demo-banner{background:#fff7d6;border-bottom:1px solid #e8d48a;padding:.5rem 1rem;text-align:center;font-size:.9rem}
+.demo-banner.flash{background:#ffe08a}</style>
+</head>
+<body>
+<div class="demo-banner">Demo with made-up data: look around, but nothing here is saved.
+<a href="https://github.com/Shen-42/gallbladder-tracker#run">Run your own copy</a></div>
+<nav>
+    <a href="meals-new.html">+ Meal</a>
+    <a href="episodes-new.html">+ Pain</a>
+    <a href="index.html" aria-current="page">Timeline</a>
+    <a href="chart.html">Chart</a>
+    <a href="summary.html">Summary</a>
+    <a href="settings.html">Settings</a>
+</nav>
+<main>
+    <h1>Edit meal</h1>
+
+    
+
+    
+
+    <form action="meals-59.html" method="post">
+        <label>When
+            <input type="datetime-local" id="eatenAt" name="eatenAt" value="2026-11-05T12:04">
+        </label>
+        
+
+        <div id="items">
+            <fieldset class="item">
+                <label>Food
+                    <input list="foods" autocomplete="off" id="items0.foodName" name="items[0].foodName" value="Pork belly">
+                </label>
+                
+                <div class="usda" hidden aria-live="polite"></div>
+                
+
+                <div class="row">
+                    <label>Amount
+                        <input type="number" step="any" min="0" inputmode="decimal" id="items0.amount" name="items[0].amount" value="100">
+                    </label>
+                    <label>Unit
+                        <select id="items0.unit" name="items[0].unit">
+                            <option value="GRAMS" selected="selected">grams</option>
+                            <option value="PORTIONS">portions (e.g. 2 eggs)</option>
+                        </select>
+                    </label>
+                </div>
+                
+
+                <div class="fat-field">
+                    <label>Fat per 100 g <small>new food, so enter it once</small>
+                        <input type="number" step="any" min="0" max="100" inputmode="decimal" id="items0.fatPer100g" name="items[0].fatPer100g" value="">
+                    </label>
+                    
+                </div>
+
+                <div class="portion-field">
+                    <label>Grams per portion <small>this food has no portion size yet</small>
+                        <input type="number" step="any" min="0" inputmode="decimal" id="items0.portionGrams" name="items[0].portionGrams" value="">
+                    </label>
+                    
+                </div>
+            </fieldset>
+            <fieldset class="item">
+                <label>Food
+                    <input list="foods" autocomplete="off" id="items1.foodName" name="items[1].foodName" value="Fried egg">
+                </label>
+                
+                <div class="usda" hidden aria-live="polite"></div>
+                
+
+                <div class="row">
+                    <label>Amount
+                        <input type="number" step="any" min="0" inputmode="decimal" id="items1.amount" name="items[1].amount" value="100">
+                    </label>
+                    <label>Unit
+                        <select id="items1.unit" name="items[1].unit">
+                            <option value="GRAMS" selected="selected">grams</option>
+                            <option value="PORTIONS">portions (e.g. 2 eggs)</option>
+                        </select>
+                    </label>
+                </div>
+                
+
+                <div class="fat-field">
+                    <label>Fat per 100 g <small>new food, so enter it once</small>
+                        <input type="number" step="any" min="0" max="100" inputmode="decimal" id="items1.fatPer100g" name="items[1].fatPer100g" value="">
+                    </label>
+                    
+                </div>
+
+                <div class="portion-field">
+                    <label>Grams per portion <small>this food has no portion size yet</small>
+                        <input type="number" step="any" min="0" inputmode="decimal" id="items1.portionGrams" name="items[1].portionGrams" value="">
+                    </label>
+                    
+                </div>
+            </fieldset>
+        </div>
+        <datalist id="foods">
+            <option value="Bok choy" data-portion="false"></option>
+            <option value="Fried egg" data-portion="false"></option>
+            <option value="Noodles" data-portion="false"></option>
+            <option value="Pork belly" data-portion="false"></option>
+            <option value="Rice" data-portion="false"></option>
+            <option value="Tofu" data-portion="false"></option>
+        </datalist>
+
+        <button type="button" id="add-item" class="secondary">+ Add another food</button>
+
+        <label>Note <small>optional</small>
+            <input type="text" id="note" name="note" value="">
+        </label>
+
+        
+
+        <div class="form-buttons">
+            <button type="submit">Save meal</button>
+            <a href="meals-59.html">Cancel</a>
+        </div>
+    </form>
+</main>
+<script>
+    // Copy the last food row, renumber its fields, and clear them.
+    document.getElementById('add-item').addEventListener('click', () => {
+        const rows = document.querySelectorAll('#items .item');
+        const copy = rows[rows.length - 1].cloneNode(true);
+        copy.querySelectorAll('.error').forEach(e => e.remove());
+        copy.querySelectorAll('.usda').forEach(box => { box.hidden = true; box.replaceChildren(); });
+        copy.querySelectorAll('[name]').forEach(el => {
+            el.name = el.name.replace(/items\[\d+\]/, `items[${rows.length}]`);
+            el.removeAttribute('id');
+            el.value = el.tagName === 'SELECT' ? 'GRAMS' : '';
+        });
+        document.getElementById('items').appendChild(copy);
+        showNeededFields(copy);
+        copy.querySelector('input').focus();
+    });
+
+    // USDA search: typing a food name you haven't logged before looks it up, and picking a result saves it.
+    const usdaUrl = "\/foods\/usda";
+    const datalist = document.getElementById('foods');
+    const known = new Set([...datalist.options].map(o => o.value.toLowerCase()));
+    const timers = new WeakMap();
+    const withPortion = new Set([...datalist.options].filter(o => o.dataset.portion === 'true')
+        .map(o => o.value.toLowerCase()));
+
+    // Fat per 100 g is only asked for a new food, grams per portion only for portions of a food without a
+    // portion size. A field stays visible if it has a value or an error. Without JavaScript, both always show.
+    function showNeededFields(row) {
+        const name = row.querySelector('[name$=".foodName"]').value.trim().toLowerCase();
+        const isNew = name !== '' && !known.has(name);
+        const portions = row.querySelector('[name$=".unit"]').value === 'PORTIONS';
+        const keep = field => field.querySelector('input').value !== '' || field.querySelector('.error') !== null;
+        const fat = row.querySelector('.fat-field'), portion = row.querySelector('.portion-field');
+        fat.hidden = !(isNew || keep(fat));
+        portion.hidden = !((portions && (isNew || !withPortion.has(name))) || keep(portion));
+    }
+    document.querySelectorAll('#items .item').forEach(showNeededFields);
+    document.getElementById('items').addEventListener('change', event => showNeededFields(event.target.closest('.item')));
+
+    function show(box, ...children) {
+        box.replaceChildren(...children);
+        box.hidden = children.length === 0;
+    }
+
+    function text(tag, content, className) {
+        const el = document.createElement(tag);
+        el.textContent = content;
+        if (className) el.className = className;
+        return el;
+    }
+
+    function enterYourself(box, message) {
+        show(box, text('p', message + ' Enter the fat per 100 g yourself below.', 'error'));
+    }
+
+    async function search(row, query) {
+        const box = row.querySelector('.usda');
+        row.dataset.query = query;
+        const spinner = text('p', 'Searching USDA…', 'hint');
+        spinner.prepend(text('span', '', 'spinner'));
+        show(box, spinner);
+        let body;
+        try {
+            const response = await fetch(usdaUrl + '?q=' + encodeURIComponent(query));
+            body = await response.json();
+            if (!response.ok) throw new Error(body.error);
+        } catch (e) {
+            if (row.dataset.query === query) enterYourself(box, e.message || "USDA search isn't reachable right now.");
+            return;
+        }
+        if (row.dataset.query !== query) return; // a newer search has started
+        if (body.length === 0) {
+            enterYourself(box, 'No USDA match for "' + query + '".');
+            return;
+        }
+        const list = document.createElement('ul');
+        for (const result of body) {
+            const button = text('button', '', 'secondary');
+            button.type = 'button';
+            button.append(text('span', result.name, 'what'), text('span', result.fatPer100g + ' g fat / 100 g'));
+            button.addEventListener('click', () => pick(row, result));
+            const li = document.createElement('li');
+            li.append(button);
+            list.append(li);
+        }
+        const none = text('button', 'None of these, I\'ll enter it myself', 'link');
+        none.type = 'button';
+        none.addEventListener('click', () => show(box));
+        show(box, text('p', 'From USDA, tap one to use it:', 'hint'), list, none);
+    }
+
+    async function pick(row, result) {
+        const box = row.querySelector('.usda');
+        try {
+            const csrf = {[document.querySelector('meta[name=csrf-header]').content]:
+                    document.querySelector('meta[name=csrf-token]').content};
+            const response = await fetch(usdaUrl, {method: 'POST', headers: csrf, body: new URLSearchParams(result)});
+            if (!response.ok) throw new Error();
+            const food = await response.json();
+            row.querySelector('[name$=".foodName"]').value = food.name;
+            row.querySelector('[name$=".fatPer100g"]').value = food.fatPer100g;
+            known.add(food.name.toLowerCase());
+            showNeededFields(row);
+            const option = document.createElement('option');
+            option.value = food.name;
+            datalist.append(option);
+            show(box, text('p', 'Saved "' + food.name + '" with ' + food.fatPer100g + ' g fat per 100 g.', 'hint'));
+        } catch (e) {
+            enterYourself(box, "Couldn't save that food.");
+        }
+    }
+
+    document.getElementById('items').addEventListener('input', event => {
+        if (!event.target.matches('[name$=".foodName"]')) return;
+        const row = event.target.closest('.item');
+        const query = event.target.value.trim();
+        clearTimeout(timers.get(row));
+        delete row.dataset.query;
+        if (query.length < 3 || known.has(query.toLowerCase())) {
+            show(row.querySelector('.usda'));
+            return;
+        }
+        timers.set(row, setTimeout(() => search(row, query), 700));
+    });
+</script>
+<script>
+document.querySelectorAll('form').forEach(f => f.addEventListener('submit', e => {
+    e.preventDefault();
+    const b = document.querySelector('.demo-banner');
+    b.classList.add('flash'); b.scrollIntoView({behavior: 'smooth'});
+    setTimeout(() => b.classList.remove('flash'), 1500);
+}));
+</script>
+</body>
+</html>

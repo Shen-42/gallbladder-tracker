@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>How the summary works</title>
+    <link rel="stylesheet" href="app.css">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#2a5d9f">
+<style>.demo-banner{background:#fff7d6;border-bottom:1px solid #e8d48a;padding:.5rem 1rem;text-align:center;font-size:.9rem}
+.demo-banner.flash{background:#ffe08a}</style>
+</head>
+<body>
+<div class="demo-banner">Demo with made-up data: look around, but nothing here is saved.
+<a href="https://github.com/Shen-42/gallbladder-tracker#run">Run your own copy</a></div>
+<nav>
+    <a href="meals-new.html">+ Meal</a>
+    <a href="episodes-new.html">+ Pain</a>
+    <a href="index.html">Timeline</a>
+    <a href="chart.html">Chart</a>
+    <a href="summary.html" aria-current="page">Summary</a>
+    <a href="settings.html">Settings</a>
+</nav>
+<main>
+    <h1>How the summary works</h1>
+    <p><a href="summary.html">&larr; Back to the summary</a></p>
+
+    <h2>The table</h2>
+    <p>Each meal is counted once. It is <strong>followed by pain</strong> if pain started at the time of the
+        meal or up to the lookback window after it (set in Settings, 6 hours unless you change it).
+        It is <strong>over</strong> if its fat total is above your limit; a meal exactly at the limit counts as within.</p>
+    <p>A meal from the last few hours with no pain yet is left out until its window ends, because pain could
+        still follow. Deleted meals and pain entries are left out.</p>
+
+    <h2>Median time to pain</h2>
+    <p>For every meal followed by pain, the app takes the time from the meal to the first pain after it.
+        The median is the middle of those times: half were shorter, half longer.</p>
+
+    <h2>Why small counts are unreliable</h2>
+    <p>With few pain entries, one more or one fewer changes a percentage a lot: 1 of 2 meals is 50%, 2 of 2 is 100%.
+        That is why percentages stay hidden until you have logged <span>5</span> pain entries,
+        and even after that a difference between the rows can be chance.</p>
+    <p>One pain entry can follow several meals, so it can be counted more than once. Things other than fat, such as
+        meal size or timing, can also matter.</p>
+
+    <h2 id="foods">Foods and pain: the permutation test</h2>
+    <p>For each food eaten in at least <span>10</span> meals, the app counts how many of those
+        meals were followed by pain. Then it asks: if this food made no difference, how often would its meals end up
+        with at least that many by luck alone?</p>
+    <p>To answer, it keeps the real number of meals followed by pain but hands that label out to meals at random,
+        <span>10,000</span> times, and counts how often
+        the food's meals get at least as many as they really did. That share is the <strong>p-value</strong>.
+        A small p-value (say below 0.05) means the real result would be unusual if the food didn't matter.</p>
+    <p>Treat it as a lead to discuss, not proof:</p>
+    <ul class="items">
+        <li>Testing many foods means some will look unusual by chance. With 20 foods, about one is expected
+            below 0.05 even if none matter.</li>
+        <li>Foods eaten together, such as rice with a fatty dish, share their results.</li>
+        <li>Meals close together share the same pain entry, so they are not independent, which makes the test
+            overconfident.</li>
+        <li>It only looks at whether a food was in the meal, not how much of it.</li>
+    </ul>
+    <p>Foods with fewer meals are left out, and nothing is shown before
+        <span>5</span> pain entries, because the result would not mean anything.</p>
+
+    <p class="muted">This is a record to discuss with your doctor, not a diagnosis.</p>
+</main>
+<script>
+document.querySelectorAll('form').forEach(f => f.addEventListener('submit', e => {
+    e.preventDefault();
+    const b = document.querySelector('.demo-banner');
+    b.classList.add('flash'); b.scrollIntoView({behavior: 'smooth'});
+    setTimeout(() => b.classList.remove('flash'), 1500);
+}));
+</script>
+</body>
+</html>

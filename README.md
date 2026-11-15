@@ -3,6 +3,9 @@
 A single-user web app for logging meals with their fat content (and, later, symptom episodes)
 so you can see which meals came before pain.
 
+**[Try the demo](https://shen-42.github.io/gallbladder-tracker/)**: the app's pages filled with made-up data.
+It is read-only; to log your own meals, run it yourself with Docker (below).
+
 ## Why I built this
 
 On a weekend trip with friends, I felt nauseous all day and had pain in the upper right of my abdomen that
@@ -43,6 +46,11 @@ If the search fails, the form says so and you enter the fat per 100 g yourself.
 - **Settings → Download CSV** gives a zip with `meals.csv` (one row per food eaten) and `episodes.csv`.
 - **Summary → Report for appointments** makes a one-page PDF for a date range: the counts, the chart, and every episode.
 
+## Demo
+
+The demo in `docs/` is a static copy of the app's pages, captured from a local run with made-up data and served by
+GitHub Pages. Forms in it don't save.
+
 ## Test
 
 ```sh
@@ -50,29 +58,3 @@ If the search fails, the form says so and you enter the fat per 100 g yourself.
 ```
 
 Tests use an in-memory H2 database.
-
-## Deploy to Render
-
-Everything runs on free plans: the app on [Render](https://render.com) and the database on [Neon](https://neon.tech),
-whose free Postgres doesn't expire (0.5 GB, far more than this app needs). `render.yaml` describes the app.
-
-**1. Create the database on Neon**
-
-1. Sign up at https://console.neon.tech and create a project. Pick the **AWS Asia Pacific (Singapore)** region,
-   next to the app.
-2. On the project dashboard click **Connect**, turn **Connection pooling off**, and copy the connection string.
-   It looks like `postgresql://neondb_owner:...@ep-....ap-southeast-1.aws.neon.tech/neondb?sslmode=require`.
-   Treat it like a password: it gives full access to your records.
-
-**2. Create the app on Render**
-
-1. In the [Render dashboard](https://dashboard.render.com), choose **New → Blueprint** and pick this repo.
-2. When asked, paste the Neon string into `DATABASE_URL`, enter a long `APP_PASSWORD` (the app is on the open
-   internet), and optionally a `USDA_API_KEY`.
-3. Click **Apply**. The first build takes a few minutes; then open the `onrender.com` address and log in as `me`.
-   The tables are created on first start.
-
-Every push to `main` redeploys. Two things to know about the free plans:
-
-- The app sleeps after 15 minutes without visits, so the first page after a break takes about a minute.
-- Neon's free plan keeps only a short restore history, so download the CSV from Settings now and then as your own copy.

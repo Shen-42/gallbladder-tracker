@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Foods and pain</title>
+    <link rel="stylesheet" href="app.css">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#2a5d9f">
+<style>.demo-banner{background:#fff7d6;border-bottom:1px solid #e8d48a;padding:.5rem 1rem;text-align:center;font-size:.9rem}
+.demo-banner.flash{background:#ffe08a}</style>
+</head>
+<body>
+<div class="demo-banner">Demo with made-up data: look around, but nothing here is saved.
+<a href="https://github.com/Shen-42/gallbladder-tracker#run">Run your own copy</a></div>
+<nav>
+    <a href="meals-new.html">+ Meal</a>
+    <a href="episodes-new.html">+ Pain</a>
+    <a href="index.html">Timeline</a>
+    <a href="chart.html">Chart</a>
+    <a href="summary.html" aria-current="page">Summary</a>
+    <a href="settings.html">Settings</a>
+</nav>
+<main>
+    <h1>Which foods come before pain?</h1>
+    <p><a href="summary.html">&larr; Back to the summary</a></p>
+
+    
+
+    
+        <p>22 of 89 meals were followed by pain within 6 h. Foods eaten in at least 10 meals, most unusual first:</p>
+        
+        <ul class="food-results">
+            <li>
+                <strong>Pork belly</strong> <span class="muted">p &lt; 0.001</span>
+                <p>Meals with Pork belly were followed by pain 19 of 34 times, against 3 of 55 meals without it. If Pork belly made no difference, a result at least this high would come up fewer than 1 time in 1,000 by chance (p &lt; 0.001).</p>
+            </li>
+            <li>
+                <strong>Fried egg</strong> <span class="muted">p = 0.48</span>
+                <p>Meals with Fried egg were followed by pain 9 of 34 times, against 13 of 55 meals without it. If Fried egg made no difference, a result at least this high would come up about 48 times in 100 by chance (p = 0.48).</p>
+            </li>
+            <li>
+                <strong>Noodles</strong> <span class="muted">p = 0.68</span>
+                <p>Meals with Noodles were followed by pain 6 of 26 times, against 16 of 63 meals without it. If Noodles made no difference, a result at least this high would come up about 68 times in 100 by chance (p = 0.68).</p>
+            </li>
+            <li>
+                <strong>Rice</strong> <span class="muted">p = 0.97</span>
+                <p>Meals with Rice were followed by pain 6 of 37 times, against 16 of 52 meals without it. If Rice made no difference, a result at least this high would come up about 97 times in 100 by chance (p = 0.97).</p>
+            </li>
+            <li>
+                <strong>Tofu</strong> <span class="muted">p = 0.99</span>
+                <p>Meals with Tofu were followed by pain 3 of 26 times, against 19 of 63 meals without it. If Tofu made no difference, a result at least this high would come up about 99 times in 100 by chance (p = 0.99).</p>
+            </li>
+            <li>
+                <strong>Bok choy</strong> <span class="muted">p = 1.00</span>
+                <p>Meals with Bok choy were followed by pain 1 of 21 times, against 21 of 68 meals without it. If Bok choy made no difference, a result at least this high would come up almost every time by chance (p = 1.00).</p>
+            </li>
+        </ul>
+        <p class="hint">With 6 foods tested, some will look unusual by chance alone.</p>
+    
+
+    <p><a href="#">How this is calculated, and why to treat it as a lead, not proof</a></p>
+
+    
+</main>
+<script>
+document.querySelectorAll('form').forEach(f => f.addEventListener('submit', e => {
+    e.preventDefault();
+    const b = document.querySelector('.demo-banner');
+    b.classList.add('flash'); b.scrollIntoView({behavior: 'smooth'});
+    setTimeout(() => b.classList.remove('flash'), 1500);
+}));
+</script>
+</body>
+</html>

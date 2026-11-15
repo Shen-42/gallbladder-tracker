@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Summary</title>
+    <link rel="stylesheet" href="app.css">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#2a5d9f">
+<style>.demo-banner{background:#fff7d6;border-bottom:1px solid #e8d48a;padding:.5rem 1rem;text-align:center;font-size:.9rem}
+.demo-banner.flash{background:#ffe08a}</style>
+</head>
+<body>
+<div class="demo-banner">Demo with made-up data: look around, but nothing here is saved.
+<a href="https://github.com/Shen-42/gallbladder-tracker#run">Run your own copy</a></div>
+<nav>
+    <a href="meals-new.html">+ Meal</a>
+    <a href="episodes-new.html">+ Pain</a>
+    <a href="index.html">Timeline</a>
+    <a href="chart.html">Chart</a>
+    <a href="summary.html" aria-current="page">Summary</a>
+    <a href="settings.html">Settings</a>
+</nav>
+<main>
+    <h1>Summary</h1>
+
+    
+
+    
+
+    <table class="two-by-two">
+        <caption>Meals followed by pain within 6 h</caption>
+        <thead>
+        <tr><th></th><th>Followed by pain</th><th>Not followed</th><th>Meals</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th>Over 15.0 g</th>
+            <td><span>22</span>
+                <small>40%</small></td>
+            <td><span>33</span>
+                <small>60%</small></td>
+            <td>55</td>
+        </tr>
+        <tr>
+            <th>Within 15.0 g</th>
+            <td><span>0</span>
+                <small>0%</small></td>
+            <td><span>34</span>
+                <small>100%</small></td>
+            <td>34</td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr><th>All meals</th><td>22</td><td>67</td><td>89</td></tr>
+        </tfoot>
+    </table>
+
+    <p>From 89 meals and 19 pain entries.</p>
+    
+    <p><a href="summary-help.html">How this is calculated, and why small counts are unreliable</a></p>
+    <p><a href="summary-foods.html">Which foods come before pain?</a></p>
+
+    <details>
+        <summary>More details</summary>
+        <ul class="items">
+            <li>Median time from meal to pain: 3 h 23 min (from 22 meals followed by pain)</li>
+            
+            <li>1 recent meals are not counted yet, because their 6 h window has not ended.</li>
+            <li>Lookback window: <span>6 hours.</span> <a href="settings.html">Change</a></li>
+        </ul>
+    </details>
+
+    <h2>Report for appointments</h2>
+    <p class="hint">A one-page PDF with this table, the chart, and every pain entry in the dates you pick.</p>
+    <form action="#" method="get">
+        <div class="row">
+            <label>From <input type="date" name="from" value="2026-10-17" max="2026-11-15"></label>
+            <label>To <input type="date" name="to" value="2026-11-15" max="2026-11-15"></label>
+        </div>
+        
+        <button type="submit">Download PDF</button>
+    </form>
+</main>
+<script>
+document.querySelectorAll('form').forEach(f => f.addEventListener('submit', e => {
+    e.preventDefault();
+    const b = document.querySelector('.demo-banner');
+    b.classList.add('flash'); b.scrollIntoView({behavior: 'smooth'});
+    setTimeout(() => b.classList.remove('flash'), 1500);
+}));
+</script>
+</body>
+</html>

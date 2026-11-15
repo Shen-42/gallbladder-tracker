@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Meal</title>
+    <link rel="stylesheet" href="app.css">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#2a5d9f">
+<style>.demo-banner{background:#fff7d6;border-bottom:1px solid #e8d48a;padding:.5rem 1rem;text-align:center;font-size:.9rem}
+.demo-banner.flash{background:#ffe08a}</style>
+</head>
+<body>
+<div class="demo-banner">Demo with made-up data: look around, but nothing here is saved.
+<a href="https://github.com/Shen-42/gallbladder-tracker#run">Run your own copy</a></div>
+<nav>
+    <a href="meals-new.html">+ Meal</a>
+    <a href="episodes-new.html">+ Pain</a>
+    <a href="index.html" aria-current="page">Timeline</a>
+    <a href="chart.html">Chart</a>
+    <a href="summary.html">Summary</a>
+    <a href="settings.html">Settings</a>
+</nav>
+<main>
+    <h1>Sat 31 Oct, 19:15</h1>
+    <p><a href="days-2026-10-31.html">&larr; Timeline for this day</a></p>
+
+    <p class="total">
+        <strong>6.9 g fat</strong>
+        
+        
+        <span>· Within your 15.0 g limit</span>
+    </p>
+
+    <ul class="items">
+        <li>
+            <span>Tofu</span>
+            <span class="muted">100 g · 4.8 g fat</span>
+        </li>
+        <li>
+            <span>Noodles</span>
+            <span class="muted">100 g · 2.1 g fat</span>
+        </li>
+    </ul>
+    
+
+    <div class="actions">
+        <a class="button" href="meals-45-edit.html">Edit</a>
+        <form action="#" method="post">
+            <button type="submit" class="danger">Delete</button>
+        </form>
+    </div>
+
+    <a class="button" href="meals-new.html">Log another meal</a>
+</main>
+<script>
+document.querySelectorAll('form').forEach(f => f.addEventListener('submit', e => {
+    e.preventDefault();
+    const b = document.querySelector('.demo-banner');
+    b.classList.add('flash'); b.scrollIntoView({behavior: 'smooth'});
+    setTimeout(() => b.classList.remove('flash'), 1500);
+}));
+</script>
+</body>
+</html>

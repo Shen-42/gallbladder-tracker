@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit pain</title>
+    <link rel="stylesheet" href="app.css">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#2a5d9f">
+<style>.demo-banner{background:#fff7d6;border-bottom:1px solid #e8d48a;padding:.5rem 1rem;text-align:center;font-size:.9rem}
+.demo-banner.flash{background:#ffe08a}</style>
+</head>
+<body>
+<div class="demo-banner">Demo with made-up data: look around, but nothing here is saved.
+<a href="https://github.com/Shen-42/gallbladder-tracker#run">Run your own copy</a></div>
+<nav>
+    <a href="meals-new.html">+ Meal</a>
+    <a href="episodes-new.html">+ Pain</a>
+    <a href="index.html" aria-current="page">Timeline</a>
+    <a href="chart.html">Chart</a>
+    <a href="summary.html">Summary</a>
+    <a href="settings.html">Settings</a>
+</nav>
+<main>
+    <h1>Edit pain</h1>
+
+    
+
+    <form action="episodes-19.html" method="post">
+        <label>Started
+            <input type="datetime-local" id="startedAt" name="startedAt" value="2026-11-14T13:28">
+        </label>
+        
+
+        <label>Ended <small>optional, leave empty if it hasn't stopped</small>
+            <input type="datetime-local" id="endedAt" name="endedAt" value="">
+        </label>
+        
+
+        <fieldset class="scale">
+            <legend>How bad is the pain?</legend>
+            <div class="scale-options">
+                <label>
+                    <input type="radio" value="0" id="severity1" name="severity">
+                    <span>0</span>
+                </label><label>
+                    <input type="radio" value="1" id="severity2" name="severity">
+                    <span>1</span>
+                </label><label>
+                    <input type="radio" value="2" id="severity3" name="severity">
+                    <span>2</span>
+                </label><label>
+                    <input type="radio" value="3" id="severity4" name="severity">
+                    <span>3</span>
+                </label><label>
+                    <input type="radio" value="4" id="severity5" name="severity">
+                    <span>4</span>
+                </label><label>
+                    <input type="radio" value="5" id="severity6" name="severity">
+                    <span>5</span>
+                </label><label>
+                    <input type="radio" value="6" id="severity7" name="severity" checked="checked">
+                    <span>6</span>
+                </label><label>
+                    <input type="radio" value="7" id="severity8" name="severity">
+                    <span>7</span>
+                </label><label>
+                    <input type="radio" value="8" id="severity9" name="severity">
+                    <span>8</span>
+                </label><label>
+                    <input type="radio" value="9" id="severity10" name="severity">
+                    <span>9</span>
+                </label><label>
+                    <input type="radio" value="10" id="severity11" name="severity">
+                    <span>10</span>
+                </label>
+            </div>
+            <div class="scale-anchors"><span>0 = no pain</span><span>10 = worst pain imaginable</span></div>
+        </fieldset>
+        
+
+        <label>Where <small>optional</small>
+            <input list="locations" autocomplete="off" id="location" name="location" value="upper right abdomen">
+        </label>
+        <datalist id="locations">
+            <option value="upper right abdomen"></option>
+            <option value="upper middle abdomen"></option>
+            <option value="right shoulder"></option>
+            <option value="back, between the shoulder blades"></option>
+        </datalist>
+
+        <label>Note <small>optional</small>
+            <input type="text" id="note" name="note" value="">
+        </label>
+
+        <div class="form-buttons">
+            <button type="submit">Save pain</button>
+            <a href="episodes-19.html">Cancel</a>
+        </div>
+    </form>
+</main>
+<script>
+document.querySelectorAll('form').forEach(f => f.addEventListener('submit', e => {
+    e.preventDefault();
+    const b = document.querySelector('.demo-banner');
+    b.classList.add('flash'); b.scrollIntoView({behavior: 'smooth'});
+    setTimeout(() => b.classList.remove('flash'), 1500);
+}));
+</script>
+</body>
+</html>

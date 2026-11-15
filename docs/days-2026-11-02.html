@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Timeline</title>
+    <link rel="stylesheet" href="app.css">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#2a5d9f">
+<style>.demo-banner{background:#fff7d6;border-bottom:1px solid #e8d48a;padding:.5rem 1rem;text-align:center;font-size:.9rem}
+.demo-banner.flash{background:#ffe08a}</style>
+</head>
+<body>
+<div class="demo-banner">Demo with made-up data: look around, but nothing here is saved.
+<a href="https://github.com/Shen-42/gallbladder-tracker#run">Run your own copy</a></div>
+<nav>
+    <a href="meals-new.html">+ Meal</a>
+    <a href="episodes-new.html">+ Pain</a>
+    <a href="index.html" aria-current="page">Timeline</a>
+    <a href="chart.html">Chart</a>
+    <a href="summary.html">Summary</a>
+    <a href="settings.html">Settings</a>
+</nav>
+<main>
+    <h1>
+        <span>Mon 2 Nov 2026</span>
+        
+    </h1>
+
+    
+
+    <p class="day-links">
+        <a href="days-2026-11-01.html">&larr; Previous day</a>
+        <a href="days-2026-11-03.html">Next day &rarr;</a>
+    </p>
+
+    
+
+    <ul class="timeline">
+        <li class="over">
+            <a href="meals-49.html">
+                <time>08:31</time>
+                <span class="what">Fried egg, Rice</span>
+                <span class="fat">15.1 / 15.0 g fat</span>
+                <strong class="flag">over limit</strong>
+            </a>
+            
+        </li>
+        <li class="over">
+            <a href="meals-50.html">
+                <time>12:02</time>
+                <span class="what">Pork belly, Noodles</span>
+                <span class="fat">55.1 / 15.0 g fat</span>
+                <strong class="flag">over limit</strong>
+            </a>
+            
+        </li>
+        <li class="episode">
+            
+            <a href="episodes-11.html">
+                <time>13:55</time>
+                <span class="what">Pain 4/10 · upper right abdomen</span>
+                
+            </a>
+        </li>
+        <li class="over">
+            <a href="meals-51.html">
+                <time>19:26</time>
+                <span class="what">Pork belly, Fried egg</span>
+                <span class="fat">67.8 / 15.0 g fat</span>
+                <strong class="flag">over limit</strong>
+            </a>
+            
+        </li>
+    </ul>
+</main>
+<script>
+document.querySelectorAll('form').forEach(f => f.addEventListener('submit', e => {
+    e.preventDefault();
+    const b = document.querySelector('.demo-banner');
+    b.classList.add('flash'); b.scrollIntoView({behavior: 'smooth'});
+    setTimeout(() => b.classList.remove('flash'), 1500);
+}));
+</script>
+</body>
+</html>

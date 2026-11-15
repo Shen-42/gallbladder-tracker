@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Timeline</title>
+    <link rel="stylesheet" href="app.css">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#2a5d9f">
+<style>.demo-banner{background:#fff7d6;border-bottom:1px solid #e8d48a;padding:.5rem 1rem;text-align:center;font-size:.9rem}
+.demo-banner.flash{background:#ffe08a}</style>
+</head>
+<body>
+<div class="demo-banner">Demo with made-up data: look around, but nothing here is saved.
+<a href="https://github.com/Shen-42/gallbladder-tracker#run">Run your own copy</a></div>
+<nav>
+    <a href="meals-new.html">+ Meal</a>
+    <a href="episodes-new.html">+ Pain</a>
+    <a href="index.html" aria-current="page">Timeline</a>
+    <a href="chart.html">Chart</a>
+    <a href="summary.html">Summary</a>
+    <a href="settings.html">Settings</a>
+</nav>
+<main>
+    <h1>
+        <span>Tue 3 Nov 2026</span>
+        
+    </h1>
+
+    
+
+    <p class="day-links">
+        <a href="days-2026-11-02.html">&larr; Previous day</a>
+        <a href="days-2026-11-04.html">Next day &rarr;</a>
+    </p>
+
+    
+
+    <ul class="timeline">
+        <li class="episode">
+            
+            <a href="episodes-12.html">
+                <time>00:14</time>
+                <span class="what">Pain 5/10 · upper right abdomen</span>
+                
+            </a>
+        </li>
+        <li>
+            <a href="meals-52.html">
+                <time>08:36</time>
+                <span class="what">Rice, Bok choy</span>
+                <span class="fat">0.5 / 15.0 g fat</span>
+                
+            </a>
+            
+        </li>
+        <li>
+            <a href="meals-53.html">
+                <time>12:25</time>
+                <span class="what">Noodles, Rice</span>
+                <span class="fat">2.4 / 15.0 g fat</span>
+                
+            </a>
+            
+        </li>
+        <li>
+            <a href="meals-54.html">
+                <time>19:31</time>
+                <span class="what">Tofu, Rice</span>
+                <span class="fat">5.1 / 15.0 g fat</span>
+                
+            </a>
+            
+        </li>
+    </ul>
+</main>
+<script>
+document.querySelectorAll('form').forEach(f => f.addEventListener('submit', e => {
+    e.preventDefault();
+    const b = document.querySelector('.demo-banner');
+    b.classList.add('flash'); b.scrollIntoView({behavior: 'smooth'});
+    setTimeout(() => b.classList.remove('flash'), 1500);
+}));
+</script>
+</body>
+</html>

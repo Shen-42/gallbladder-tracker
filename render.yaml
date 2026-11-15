@@ -1,5 +1,5 @@
 # Render Blueprint: the app, built from the Dockerfile, on Render's free plan.
-# The database is on Neon's free plan, which doesn't expire. See README "Deploy to Render".
+# The database is on Neon's free plan, which doesn't expire.
 services:
   - type: web
     name: gallbladder-tracker
