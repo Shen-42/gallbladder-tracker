@@ -40,6 +40,7 @@
                 <label>Food
                     <input list="foods" autocomplete="off" th:field="*{items[__${s.index}__].foodName}">
                 </label>
+                <div class="usda" hidden aria-live="polite"></div>
                 <p class="error" th:if="${#fields.hasErrors('items[__${s.index}__].foodName')}"
                    th:errors="*{items[__${s.index}__].foodName}"></p>
 
@@ -93,12 +94,13 @@
         </div>
     </form>
 </main>
-<script>
+<script th:inline="javascript">
     // Copy the last food row, renumber its fields, and clear them.
     document.getElementById('add-item').addEventListener('click', () => {
         const rows = document.querySelectorAll('#items .item');
         const copy = rows[rows.length - 1].cloneNode(true);
         copy.querySelectorAll('.error').forEach(e => e.remove());
+        copy.querySelectorAll('.usda').forEach(box => { box.hidden = true; box.replaceChildren(); });
         copy.querySelectorAll('[name]').forEach(el => {
             el.name = el.name.replace(/items\[\d+\]/, `items[${rows.length}]`);
             el.removeAttribute('id');
@@ -106,6 +108,95 @@
         });
         document.getElementById('items').appendChild(copy);
         copy.querySelector('input').focus();
+    });
+
+    // USDA search: typing a food name you haven't logged before looks it up, and picking a result saves it.
+    const usdaUrl = /*[[@{/foods/usda}]]*/ '/foods/usda';
+    const datalist = document.getElementById('foods');
+    const known = new Set([...datalist.options].map(o => o.value.toLowerCase()));
+    const timers = new WeakMap();
+
+    function show(box, ...children) {
+        box.replaceChildren(...children);
+        box.hidden = children.length === 0;
+    }
+
+    function text(tag, content, className) {
+        const el = document.createElement(tag);
+        el.textContent = content;
+        if (className) el.className = className;
+        return el;
+    }
+
+    function enterYourself(box, message) {
+        show(box, text('p', message + ' Enter the fat per 100 g yourself below.', 'error'));
+    }
+
+    async function search(row, query) {
+        const box = row.querySelector('.usda');
+        row.dataset.query = query;
+        const spinner = text('p', 'Searching USDA…', 'hint');
+        spinner.prepend(text('span', '', 'spinner'));
+        show(box, spinner);
+        let body;
+        try {
+            const response = await fetch(usdaUrl + '?q=' + encodeURIComponent(query));
+            body = await response.json();
+            if (!response.ok) throw new Error(body.error);
+        } catch (e) {
+            if (row.dataset.query === query) enterYourself(box, e.message || "USDA search isn't reachable right now.");
+            return;
+        }
+        if (row.dataset.query !== query) return; // a newer search has started
+        if (body.length === 0) {
+            enterYourself(box, 'No USDA match for "' + query + '".');
+            return;
+        }
+        const list = document.createElement('ul');
+        for (const result of body) {
+            const button = text('button', '', 'secondary');
+            button.type = 'button';
+            button.append(text('span', result.name, 'what'), text('span', result.fatPer100g + ' g fat / 100 g'));
+            button.addEventListener('click', () => pick(row, result));
+            const li = document.createElement('li');
+            li.append(button);
+            list.append(li);
+        }
+        const none = text('button', 'None of these, I\'ll enter it myself', 'link');
+        none.type = 'button';
+        none.addEventListener('click', () => show(box));
+        show(box, text('p', 'From USDA, tap one to use it:', 'hint'), list, none);
+    }
+
+    async function pick(row, result) {
+        const box = row.querySelector('.usda');
+        try {
+            const response = await fetch(usdaUrl, {method: 'POST', body: new URLSearchParams(result)});
+            if (!response.ok) throw new Error();
+            const food = await response.json();
+            row.querySelector('[name$=".foodName"]').value = food.name;
+            row.querySelector('[name$=".fatPer100g"]').value = food.fatPer100g;
+            known.add(food.name.toLowerCase());
+            const option = document.createElement('option');
+            option.value = food.name;
+            datalist.append(option);
+            show(box, text('p', 'Saved "' + food.name + '" with ' + food.fatPer100g + ' g fat per 100 g.', 'hint'));
+        } catch (e) {
+            enterYourself(box, "Couldn't save that food.");
+        }
+    }
+
+    document.getElementById('items').addEventListener('input', event => {
+        if (!event.target.matches('[name$=".foodName"]')) return;
+        const row = event.target.closest('.item');
+        const query = event.target.value.trim();
+        clearTimeout(timers.get(row));
+        delete row.dataset.query;
+        if (query.length < 3 || known.has(query.toLowerCase())) {
+            show(row.querySelector('.usda'));
+            return;
+        }
+        timers.set(row, setTimeout(() => search(row, query), 700));
     });
 </script>
 </body>

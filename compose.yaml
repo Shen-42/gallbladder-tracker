@@ -20,6 +20,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/gallbladder
       # Meal times are local times; "now" and the future-time check use this zone. Change it to yours.
       TZ: Asia/Shanghai
+      # For food search. Get a free key at https://fdc.nal.usda.gov/api-key-signup; DEMO_KEY is heavily rate-limited.
+      USDA_API_KEY: ${USDA_API_KEY:-DEMO_KEY}
     depends_on:
       db:
         condition: service_healthy

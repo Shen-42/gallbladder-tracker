@@ -59,3 +59,11 @@ details summary { cursor: pointer; color: #2a5d9f; }
 .timeline .incomplete { color: #7b52b9; white-space: nowrap; }
 .incomplete-note { padding: .5rem .75rem; border-radius: 6px; background: #f1ecf8; }
 .chart { position: relative; height: 22rem; background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: .5rem; }
+.usda ul { list-style: none; padding: 0; margin: 0; }
+.usda li button { display: flex; gap: .5rem; width: 100%; margin-top: .3rem; text-align: left; font-size: .9rem; }
+.usda .what { flex: 1; }
+button.link { background: none; color: #2a5d9f; padding: .4rem 0; text-decoration: underline; margin-top: .3rem; }
+.spinner { display: inline-block; width: .9em; height: .9em; margin-right: .4em; vertical-align: -.1em;
+    border: 2px solid #ccd; border-top-color: #2a5d9f; border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.4s; } }

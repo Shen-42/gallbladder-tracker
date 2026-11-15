@@ -24,6 +24,9 @@ public class Food {
     /** Weight of one portion (e.g. one egg), so amounts can be entered as "2 portions". Null until given. */
     private BigDecimal portionGrams;
 
+    /** The FoodData Central id, for foods picked from a USDA search. */
+    private Long fdcId;
+
     protected Food() {
     }
 
@@ -31,6 +34,12 @@ public class Food {
         this.name = name;
         this.fatPer100g = fatPer100g;
         this.source = source;
+    }
+
+    static Food fromUsda(String name, BigDecimal fatPer100g, long fdcId) {
+        Food food = new Food(name, fatPer100g, FoodSource.USDA);
+        food.fdcId = fdcId;
+        return food;
     }
 
     public Long getId() {
@@ -47,6 +56,10 @@ public class Food {
 
     public FoodSource getSource() {
         return source;
+    }
+
+    public Long getFdcId() {
+        return fdcId;
     }
 
     public BigDecimal getPortionGrams() {
