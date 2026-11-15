@@ -4,7 +4,7 @@ services:
   - type: web
     name: gallbladder-tracker
     runtime: docker
-    plan: 0.5c-512mb        # smallest always-on plan; "free" sleeps when idle
+    plan: free              # sleeps after 15 idle minutes; the next visit takes about a minute to wake it
     region: singapore       # closest Render region to Shanghai; can't be changed later
     healthCheckPath: /login
     envVars:
@@ -23,7 +23,7 @@ services:
 
 databases:
   - name: gallbladder-db
-    plan: 0.1c-256mb        # paid plan, so the data isn't deleted like on the free tier
+    plan: free              # Render deletes free databases 30 days after creation: download the CSV regularly
     region: singapore
     postgresMajorVersion: "17"
     databaseName: gallbladder

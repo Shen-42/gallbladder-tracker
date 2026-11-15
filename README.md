@@ -43,12 +43,16 @@ Tests use an in-memory H2 database.
 
 ## Deploy to Render
 
-`render.yaml` describes the app and its Postgres database, both in Singapore. They cost about $7 and $6 a month.
-The free tier isn't used because its database is deleted after 30 days.
+`render.yaml` describes the app and its Postgres database, both in Singapore, on Render's free plans. Two limits:
+
+- The app sleeps after 15 minutes without visits, so the first page after a break takes about a minute.
+- **Render deletes a free database 30 days after it is created**, with everything in it. Download the CSV
+  (Settings) every week, and before day 30 either upgrade the database in the Render dashboard or move to
+  another free Postgres host.
 
 1. Push this repo to GitHub.
 2. In the [Render dashboard](https://dashboard.render.com), choose **New → Blueprint** and pick the repo.
 3. When asked, enter `APP_PASSWORD` (use a long one: the app is on the open internet) and, optionally, `USDA_API_KEY`.
 4. Click **Apply**. The first build takes a few minutes; then open the `onrender.com` address and log in as `me`.
 
-Every push to `main` redeploys. Render backs up paid databases daily; the CSV download in Settings is a second copy.
+Every push to `main` redeploys. Free databases have no backups, so the CSV download is your only copy.
