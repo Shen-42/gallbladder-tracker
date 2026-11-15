@@ -23,4 +23,17 @@ class GallbladderTrackerApplicationTests {
 				.containsEntry("spring.datasource.url", "jdbc:postgresql://host/db");
 	}
 
+	@Test
+	void neonUrlKeepsItsSslSettingAndTheDriverAcceptsIt() {
+		String jdbcUrl = GallbladderTrackerApplication.datasourceProperties(
+				"postgresql://neondb_owner:npg_secret@ep-cool-name-a1b2c3d4.ap-southeast-1.aws.neon.tech/neondb"
+				+ "?sslmode=require&channel_binding=require").get("spring.datasource.url");
+
+		assertThat(jdbcUrl).isEqualTo("jdbc:postgresql://ep-cool-name-a1b2c3d4.ap-southeast-1.aws.neon.tech/neondb"
+				+ "?sslmode=require&channel_binding=require");
+		java.util.Properties parsed = org.postgresql.Driver.parseURL(jdbcUrl, new java.util.Properties());
+		assertThat(parsed).isNotNull();
+		assertThat(parsed.getProperty("sslmode")).isEqualTo("require");
+	}
+
 }

@@ -43,16 +43,26 @@ Tests use an in-memory H2 database.
 
 ## Deploy to Render
 
-`render.yaml` describes the app and its Postgres database, both in Singapore, on Render's free plans. Two limits:
+Everything runs on free plans: the app on [Render](https://render.com) and the database on [Neon](https://neon.tech),
+whose free Postgres doesn't expire (0.5 GB, far more than this app needs). `render.yaml` describes the app.
+
+**1. Create the database on Neon**
+
+1. Sign up at https://console.neon.tech and create a project. Pick the **AWS Asia Pacific (Singapore)** region,
+   next to the app.
+2. On the project dashboard click **Connect**, turn **Connection pooling off**, and copy the connection string.
+   It looks like `postgresql://neondb_owner:...@ep-....ap-southeast-1.aws.neon.tech/neondb?sslmode=require`.
+   Treat it like a password: it gives full access to your records.
+
+**2. Create the app on Render**
+
+1. In the [Render dashboard](https://dashboard.render.com), choose **New → Blueprint** and pick this repo.
+2. When asked, paste the Neon string into `DATABASE_URL`, enter a long `APP_PASSWORD` (the app is on the open
+   internet), and optionally a `USDA_API_KEY`.
+3. Click **Apply**. The first build takes a few minutes; then open the `onrender.com` address and log in as `me`.
+   The tables are created on first start.
+
+Every push to `main` redeploys. Two things to know about the free plans:
 
 - The app sleeps after 15 minutes without visits, so the first page after a break takes about a minute.
-- **Render deletes a free database 30 days after it is created**, with everything in it. Download the CSV
-  (Settings) every week, and before day 30 either upgrade the database in the Render dashboard or move to
-  another free Postgres host.
-
-1. Push this repo to GitHub.
-2. In the [Render dashboard](https://dashboard.render.com), choose **New → Blueprint** and pick the repo.
-3. When asked, enter `APP_PASSWORD` (use a long one: the app is on the open internet) and, optionally, `USDA_API_KEY`.
-4. Click **Apply**. The first build takes a few minutes; then open the `onrender.com` address and log in as `me`.
-
-Every push to `main` redeploys. Free databases have no backups, so the CSV download is your only copy.
+- Neon's free plan keeps only a short restore history, so download the CSV from Settings now and then as your own copy.

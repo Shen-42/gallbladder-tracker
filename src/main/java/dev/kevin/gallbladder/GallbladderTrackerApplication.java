@@ -21,15 +21,17 @@ public class GallbladderTrackerApplication {
 	}
 
 	/**
-	 * Turns a host's {@code postgresql://user:password@host:port/database} into Spring's datasource settings,
-	 * because the JDBC driver doesn't accept a user and password inside the URL.
+	 * Turns a host's {@code postgresql://user:password@host:port/database?options} into Spring's datasource settings,
+	 * because the JDBC driver doesn't accept a user and password inside the URL. Options such as
+	 * {@code sslmode=require} are kept.
 	 */
 	static Map<String, String> datasourceProperties(String databaseUrl) {
 		URI uri = URI.create(databaseUrl);
 		String[] userInfo = uri.getRawUserInfo().split(":", 2);
 		String port = uri.getPort() == -1 ? "" : ":" + uri.getPort();
+		String query = uri.getRawQuery() == null ? "" : "?" + uri.getRawQuery();
 		return Map.of(
-				"spring.datasource.url", "jdbc:postgresql://" + uri.getHost() + port + uri.getRawPath(),
+				"spring.datasource.url", "jdbc:postgresql://" + uri.getHost() + port + uri.getRawPath() + query,
 				"spring.datasource.username", decode(userInfo[0]),
 				"spring.datasource.password", userInfo.length > 1 ? decode(userInfo[1]) : "");
 	}
