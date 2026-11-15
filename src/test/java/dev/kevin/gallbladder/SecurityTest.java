@@ -68,6 +68,16 @@ class SecurityTest {
     }
 
     @Test
+    void anExpiredFormExplainsItselfInsteadOfABareError() throws Exception {
+        mvc.perform(post("/login").param("username", "me").param("password", "test-password"))
+                .andExpect(status().isForbidden());
+        // MockMvc doesn't forward to the error page the way Tomcat does, so ask for it directly.
+        mvc.perform(get("/error").accept(org.springframework.http.MediaType.TEXT_HTML)
+                        .requestAttr("jakarta.servlet.error.status_code", 403))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString("This page had expired")));
+    }
+
+    @Test
     void appRefusesToStartWithoutAPassword() {
         assertThatThrownBy(() -> new SecurityConfig("me", " "))
                 .hasMessageContaining("APP_PASSWORD");

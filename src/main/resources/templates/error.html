@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Something went wrong</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+<main>
+    <h1 th:text="${status == 404} ? 'Not found' : 'Something went wrong'">Something went wrong</h1>
+    <p th:if="${status == 404}">That page doesn't exist, or the entry was deleted.</p>
+    <p th:unless="${status == 404}">The app hit an error and nothing was saved. Try again in a moment.</p>
+    <p><a class="button" th:href="@{/}">Start again</a></p>
+</main>
+</body>
+</html>
