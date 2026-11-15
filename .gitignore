@@ -18,6 +18,7 @@ exports/
 # Secrets and local config
 .env
 application-local.properties
+CLAUDE.md
 
 # IDE and OS
 .idea/
