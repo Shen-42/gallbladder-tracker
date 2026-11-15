@@ -186,7 +186,7 @@ public class ReportService {
         double step = niceStep(Math.max(maxFat, 1) * 1.1 / 4);
         double fatTop = step * Math.ceil(Math.max(maxFat, 1) * 1.1 / step);
 
-        // Grid, axis labels
+        // Grid, axis labels, kept clear of points on the plot's edges (pain 10, a meal now, 0 g fat)
         c.setLineWidth(0.5f);
         c.setFontAndSize(font, 7);
         for (double v = 0; v <= fatTop + 1e-9; v += step) {
@@ -195,10 +195,10 @@ public class ReportService {
             c.moveTo(left, y);
             c.lineTo(right, y);
             c.stroke();
-            text(c, Element.ALIGN_RIGHT, trim(v), left - 3, y - 2.5f, MUTED);
+            text(c, Element.ALIGN_RIGHT, trim(v), left - 7, y - 2.5f, MUTED);
         }
         for (int v = 0; v <= 10; v += 5) {
-            text(c, Element.ALIGN_LEFT, String.valueOf(v), right + 3, bottom + v / 10f * (top - bottom) - 2.5f, PAIN);
+            text(c, Element.ALIGN_LEFT, String.valueOf(v), right + 7, bottom + v / 10f * (top - bottom) - 2.5f, PAIN);
         }
         long days = ChronoUnit.DAYS.between(data.from(), data.to()) + 1;
         long every = Math.max(1, (long) Math.ceil(days / 6.0));
