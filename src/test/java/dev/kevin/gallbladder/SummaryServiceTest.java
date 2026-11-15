@@ -130,6 +130,23 @@ class SummaryServiceTest {
         return new Summary(null, 6, 0, 0, 0, 0, 0, 0, onset);
     }
 
+    @Test
+    void periodSummaryCountsOnlyItsMealsAndEpisodesButSeesPainJustAfterItsEnd() {
+        settings("15", 6);
+        java.time.LocalDate day = NOW.toLocalDate().minusDays(3);
+        meal(day.minusDays(1).atTime(12, 0), "20");      // before the period
+        episode(day.minusDays(1).atTime(13, 0));
+        meal(day.atTime(23, 0), "20");                   // last meal of the period, pain after midnight
+        episode(day.plusDays(1).atTime(1, 0));
+
+        Summary s = service.summary(day, day);
+
+        assertThat(s.meals()).isEqualTo(1);
+        assertThat(s.overFollowed()).isEqualTo(1);
+        assertThat(s.episodes()).as("the episode after midnight is outside the period").isZero();
+        assertThat(s.medianOnset()).isEqualTo(Duration.ofHours(2));
+    }
+
     private void settings(String threshold, int hours) {
         Settings s = new Settings();
         s.setFatThresholdGrams(new BigDecimal(threshold));

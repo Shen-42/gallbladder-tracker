@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,20 +67,39 @@ public class SummaryService {
         this.clock = clock;
     }
 
+    /** Every meal and episode ever logged. */
     @Transactional(readOnly = true)
     public Summary summary() {
+        List<Episode> allEpisodes = episodes.findAll();
+        return summarize(meals.findAll(), allEpisodes, allEpisodes.size());
+    }
+
+    /**
+     * Meals eaten and episodes started from {@code from} to {@code to}, both days included.
+     * An episode just after the period still counts as following a meal eaten at its end.
+     */
+    @Transactional(readOnly = true)
+    public Summary summary(LocalDate from, LocalDate to) {
+        LocalDateTime start = from.atStartOfDay();
+        LocalDateTime end = to.plusDays(1).atStartOfDay();
+        int hours = settings.current().getLookbackHours();
+        long episodesInPeriod = episodes.findStartedBetween(start, end).size();
+        return summarize(meals.findEatenBetween(start, end), episodes.findStartedBetween(start, end.plusHours(hours)),
+                episodesInPeriod);
+    }
+
+    private Summary summarize(List<Meal> mealsToCount, List<Episode> candidateEpisodes, long episodeCount) {
         Settings s = settings.current();
         BigDecimal threshold = s.getFatThresholdGrams();
         int hours = s.getLookbackHours();
         LocalDateTime now = LocalDateTime.now(clock);
 
         TreeSet<LocalDateTime> onsets = new TreeSet<>();
-        List<Episode> allEpisodes = episodes.findAll();
-        allEpisodes.forEach(e -> onsets.add(e.getStartedAt()));
+        candidateEpisodes.forEach(e -> onsets.add(e.getStartedAt()));
 
         int overFollowed = 0, overNotFollowed = 0, withinFollowed = 0, withinNotFollowed = 0, pending = 0;
         List<Duration> delays = new ArrayList<>();
-        for (Meal meal : meals.findAll()) {
+        for (Meal meal : mealsToCount) {
             LocalDateTime eaten = meal.getEatenAt();
             LocalDateTime windowEnd = eaten.plusHours(hours);
             LocalDateTime onset = onsets.ceiling(eaten);
@@ -97,7 +117,7 @@ public class SummaryService {
             }
         }
         return new Summary(threshold, hours, overFollowed, overNotFollowed, withinFollowed, withinNotFollowed,
-                allEpisodes.size(), pending, median(delays));
+                episodeCount, pending, median(delays));
     }
 
     static Duration median(List<Duration> values) {

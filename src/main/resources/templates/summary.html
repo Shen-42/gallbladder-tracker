@@ -60,6 +60,17 @@
             <li>Lookback window: <span th:text="|${s.lookbackHours} hours.|"></span> <a th:href="@{/settings}">Change</a></li>
         </ul>
     </details>
+
+    <h2>Report for appointments</h2>
+    <p class="hint">A one-page PDF with this table, the chart, and every episode in the dates you pick.</p>
+    <form th:action="@{/summary/report.pdf}" method="get">
+        <div class="row">
+            <label>From <input type="date" name="from" th:value="${reportFrom}" th:max="${today}"></label>
+            <label>To <input type="date" name="to" th:value="${reportTo}" th:max="${today}"></label>
+        </div>
+        <p class="error" th:if="${reportError != null}" th:text="${reportError}"></p>
+        <button type="submit">Download PDF</button>
+    </form>
 </main>
 </body>
 </html>
