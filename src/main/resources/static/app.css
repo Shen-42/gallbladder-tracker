@@ -54,3 +54,7 @@ details summary { cursor: pointer; color: #2a5d9f; }
 .recent { list-style: none; padding: 0; margin: 0; }
 .recent button { display: flex; gap: .5rem; width: 100%; margin-top: .4rem; text-align: left; }
 .recent .what { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.quick-options { display: flex; gap: .25rem; }
+.quick-options button { flex: 1; padding: .6rem 0; margin-top: .25rem; }
+.timeline .incomplete { color: #7b52b9; white-space: nowrap; }
+.incomplete-note { padding: .5rem .75rem; border-radius: 6px; background: #f1ecf8; }

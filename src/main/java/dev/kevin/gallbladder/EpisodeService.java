@@ -6,6 +6,7 @@ import org.springframework.validation.Errors;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 @Service
@@ -32,6 +33,15 @@ public class EpisodeService {
         }
         return Optional.of(episodes.save(new Episode(form.getStartedAt(), form.getEndedAt(), form.getSeverity(),
                 blankToNull(form.getLocation()), blankToNull(form.getNote()))));
+    }
+
+    /** Saves an episode starting now with only a severity, marked incomplete until edited. Empty if the severity is not 0 to 10. */
+    @Transactional
+    public Optional<Episode> quickLog(Integer severity) {
+        if (severity == null || severity < 0 || severity > 10) {
+            return Optional.empty();
+        }
+        return Optional.of(episodes.save(Episode.quick(LocalDateTime.now(clock).truncatedTo(ChronoUnit.MINUTES), severity)));
     }
 
     /** Like {@link #log}, but changes an existing episode. */

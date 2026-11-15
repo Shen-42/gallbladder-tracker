@@ -153,6 +153,43 @@ class EpisodeServiceTest {
                 .isInstanceOf(NotFoundException.class);
     }
 
+    @Test
+    void quickLogSavesSeverityNowAndMarksIncomplete() {
+        long id = service.quickLog(7).orElseThrow().getId();
+        reloadFromDatabase();
+
+        Episode episode = episodes.findById(id).orElseThrow();
+        assertThat(episode.getStartedAt()).isEqualTo(NOW);
+        assertThat(episode.getSeverity()).isEqualTo(7);
+        assertThat(episode.isIncomplete()).isTrue();
+    }
+
+    @Test
+    void quickLogRejectsSeverityOutside0To10() {
+        for (Integer severity : new Integer[]{null, -1, 11}) {
+            assertThat(service.quickLog(severity)).isEmpty();
+        }
+        assertThat(episodes.count()).isZero();
+    }
+
+    @Test
+    void savingTheFullFormCompletesAQuickLoggedEpisode() {
+        long id = service.quickLog(7).orElseThrow().getId();
+
+        EpisodeForm form = EpisodeForm.from(episodes.findById(id).orElseThrow());
+        form.setLocation("upper right abdomen");
+        service.update(id, form, errors(form)).orElseThrow();
+        reloadFromDatabase();
+
+        assertThat(episodes.findById(id).orElseThrow().isIncomplete()).isFalse();
+    }
+
+    @Test
+    void fullFormEpisodesAreComplete() {
+        EpisodeForm form = form(NOW, null, 5);
+        assertThat(service.log(form, errors(form)).orElseThrow().isIncomplete()).isFalse();
+    }
+
     private void reloadFromDatabase() {
         em.flush();
         em.clear();

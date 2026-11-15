@@ -12,6 +12,10 @@
     <h1 th:text="${#temporals.format(episode.startedAt, 'EEE d MMM, HH:mm')}">Episode</h1>
     <p><a th:href="@{/days/{d}(d=${episode.startedAt.toLocalDate()})}">&larr; Timeline for this day</a></p>
 
+    <p class="incomplete-note" th:if="${episode.incomplete}">
+        Quick-logged. <a th:href="@{/episodes/{id}/edit(id=${episode.id})}">Add the end time, where it hurt, or a note</a>
+    </p>
+
     <p class="total severity" th:text="|Severity ${episode.severity} / 10|">Severity</p>
 
     <ul class="items">

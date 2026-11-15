@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -41,6 +42,12 @@ public class EpisodeController {
     String create(@ModelAttribute EpisodeForm episodeForm, BindingResult result) {
         Optional<Episode> episode = episodeService.log(episodeForm, result);
         return episode.map(e -> "redirect:/episodes/" + e.getId()).orElse("episode-form");
+    }
+
+    @PostMapping("/episodes/quick")
+    String quick(@RequestParam(required = false) Integer severity) {
+        return episodeService.quickLog(severity).map(e -> "redirect:/episodes/" + e.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Severity must be 0 to 10."));
     }
 
     @GetMapping("/episodes/{id}/edit")

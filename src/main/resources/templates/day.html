@@ -39,6 +39,7 @@
                 <time th:text="${#temporals.format(e.at, 'HH:mm')}">12:00</time>
                 <span class="what"
                       th:text="|Pain ${e.episode.severity}/10${e.episode.location != null ? ' · ' + e.episode.location : ''}|">Pain</span>
+                <em th:if="${e.episode.incomplete}" class="incomplete">incomplete</em>
             </a>
         </li>
     </ul>

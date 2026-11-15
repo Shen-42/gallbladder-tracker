@@ -11,6 +11,17 @@
 <main>
     <h1 th:text="${episodeId == null} ? 'Log an episode' : 'Edit episode'">Log an episode</h1>
 
+    <form th:if="${episodeId == null}" class="quick" th:action="@{/episodes/quick}" method="post">
+        <h2>Hurting right now?</h2>
+        <p class="hint">Tap how bad it is to save it with the time now. Fill in the rest later.</p>
+        <div class="quick-options">
+            <button th:each="n : ${#numbers.sequence(0, 10)}" type="submit" name="severity" th:value="${n}"
+                    class="secondary" th:text="${n}">0</button>
+        </div>
+        <div class="scale-anchors"><span>0 = no pain</span><span>10 = worst pain imaginable</span></div>
+        <h2>Or the full form</h2>
+    </form>
+
     <form th:action="${episodeId == null} ? @{/episodes} : @{/episodes/{id}(id=${episodeId})}" th:object="${episodeForm}" method="post">
         <label>Started
             <input type="datetime-local" th:field="*{startedAt}">

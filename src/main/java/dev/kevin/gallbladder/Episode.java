@@ -1,6 +1,7 @@
 package dev.kevin.gallbladder;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,11 @@ public class Episode {
 
     private LocalDateTime deletedAt;
 
+    /** Quick-logged with only a severity; cleared once the full form is saved. */
+    @ColumnDefault("false")
+    @Column(nullable = false)
+    private boolean incomplete;
+
     protected Episode() {
     }
 
@@ -45,6 +51,14 @@ public class Episode {
         this.severity = severity;
         this.location = location;
         this.note = note;
+        this.incomplete = false;
+    }
+
+    /** An episode starting now with only a severity, to be filled in later. */
+    static Episode quick(LocalDateTime startedAt, int severity) {
+        Episode episode = new Episode(startedAt, null, severity, null, null);
+        episode.incomplete = true;
+        return episode;
     }
 
     public void markDeleted(LocalDateTime when) {
@@ -73,5 +87,9 @@ public class Episode {
 
     public String getNote() {
         return note;
+    }
+
+    public boolean isIncomplete() {
+        return incomplete;
     }
 }
