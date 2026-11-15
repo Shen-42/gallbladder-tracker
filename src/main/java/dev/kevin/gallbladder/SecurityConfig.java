@@ -41,7 +41,8 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http, UserDetailsService users) throws Exception {
         return http
                 .authorizeHttpRequests(a -> a
-                        .requestMatchers("/login", "/app.css", "/error").permitAll()
+                        .requestMatchers("/login", "/app.css", "/error", "/manifest.webmanifest", "/icon-*.png",
+                                "/apple-touch-icon.png").permitAll()
                         // Read-only pages for a doctor; ShareController checks the link's token on every request.
                         .requestMatchers("/share/**").permitAll()
                         .anyRequest().authenticated())

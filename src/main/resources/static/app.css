@@ -16,7 +16,7 @@ button.secondary { background: #e4e9f0; color: #2a5d9f; }
 .total.over { background: #fbe9e7; }
 .items { padding-left: 1.2rem; }
 .muted { color: #666; }
-nav { display: flex; flex-wrap: wrap; gap: 1rem; max-width: 32rem; margin: 0 auto; padding: .75rem 1rem 0; }
+nav { display: flex; flex-wrap: wrap; gap: .4rem .7rem; font-size: .9rem; max-width: 32rem; margin: 0 auto; padding: .75rem 1rem 0; }
 nav a { color: #2a5d9f; }
 nav a[aria-current] { color: #222; font-weight: 600; text-decoration: none; border-bottom: 2px solid #2a5d9f; }
 .scale { background: none; border: 0; padding: 0; margin: .75rem 0 .25rem; }

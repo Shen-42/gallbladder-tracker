@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:text="${mealId == null} ? 'Log a meal' : 'Edit meal'">Log a meal</title>
     <link rel="stylesheet" th:href="@{/app.css}">
+    <link rel="manifest" th:href="@{/manifest.webmanifest}">
+    <link rel="apple-touch-icon" th:href="@{/apple-touch-icon.png}">
+    <meta name="theme-color" content="#2a5d9f">
     <meta name="csrf-header" th:content="${_csrf.headerName}">
     <meta name="csrf-token" th:content="${_csrf.token}">
 </head>

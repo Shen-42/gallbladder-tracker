@@ -37,6 +37,9 @@ class SecurityTest {
     void loginPageAndStylesAreOpen() throws Exception {
         mvc.perform(get("/login")).andExpect(status().isOk());
         mvc.perform(get("/app.css")).andExpect(status().isOk());
+        mvc.perform(get("/manifest.webmanifest")).andExpect(status().isOk());
+        mvc.perform(get("/icon-192.png")).andExpect(status().isOk());
+        mvc.perform(get("/apple-touch-icon.png")).andExpect(status().isOk());
     }
 
     @Test
