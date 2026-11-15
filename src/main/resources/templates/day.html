@@ -21,7 +21,13 @@
         <a th:if="${next != null}" th:href="@{/days/{d}(d=${next})}">Next day &rarr;</a>
     </p>
 
-    <p th:if="${entries.isEmpty()}" class="muted">Nothing logged on this day.</p>
+    <div th:if="${entries.isEmpty()}" class="empty">
+        <p class="muted">Nothing logged on this day.</p>
+        <div class="actions">
+            <a class="button" th:href="@{/meals/new}">Log a meal</a>
+            <a class="button" th:href="@{/episodes/new}">Log pain</a>
+        </div>
+    </div>
 
     <ul class="timeline">
         <li th:each="e : ${entries}" th:classappend="${e.episode != null} ? 'episode' : (${e.overThreshold} ? 'over')">

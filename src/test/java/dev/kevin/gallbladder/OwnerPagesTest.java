@@ -21,6 +21,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class OwnerPagesTest {
 
     @Autowired MockMvc mvc;
+    @Autowired MealRepository meals;
+    @Autowired EpisodeRepository episodes;
+    @Autowired SettingsRepository settings;
 
     @Test
     void navMarksTheCurrentPage() throws Exception {
@@ -30,6 +33,21 @@ class OwnerPagesTest {
         assertThat(NavAdvice.section("/meals/12")).isEqualTo("timeline");
         assertThat(NavAdvice.section("/meals/new")).isEqualTo("meal");
         assertThat(NavAdvice.section("/summary/foods")).isEqualTo("summary");
+    }
+
+    @Test
+    void emptyAccountGetsWaysToStartInsteadOfBlankPages() throws Exception {
+        // Rolled back after the test, like everything else here.
+        meals.deleteAll();
+        episodes.deleteAll();
+        settings.deleteAll();
+
+        mvc.perform(get("/chart").with(user("me")))
+                .andExpect(content().string(containsString("so there is nothing to draw yet")));
+        mvc.perform(get("/summary").with(user("me")))
+                .andExpect(content().string(containsString("Nothing to summarise yet")));
+        mvc.perform(get("/meals/new").with(user("me")))
+                .andExpect(content().string(containsString("No fat limit set yet")));
     }
 
     @Test

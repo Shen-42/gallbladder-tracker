@@ -117,6 +117,8 @@ public class MealController {
     private String formView(Model model, boolean askConfirmLarge, Long mealId) {
         model.addAttribute("foods", foods.findAll(Sort.by("name")));
         model.addAttribute("askConfirmLarge", askConfirmLarge);
+        model.addAttribute("noFatLimit",
+                settings.findById(Settings.ID).map(Settings::getFatThresholdGrams).isEmpty());
         model.addAttribute("mealId", mealId);
         model.addAttribute("recentMeals", mealId == null ? mealService.recent(RECENT_MEALS) : List.of());
         return "meal-form";

@@ -48,6 +48,10 @@ button.danger { background: #b00020; }
     padding: .5rem .75rem; border-radius: 6px; background: #fff7d6; }
 .undo button { margin-top: 0; }
 .hint { margin: .25rem 0; font-size: .9rem; color: #666; }
+.notice { padding: .5rem .75rem; border-radius: 6px; background: #fff7d6; }
+.empty { padding: .75rem; border: 1px dashed #ccc; border-radius: 6px; background: #fff; }
+.empty p { margin-top: 0; }
+.empty .button { margin-top: 0; }
 .saved { padding: .5rem .75rem; border-radius: 6px; background: #e8f3ea; }
 .two-by-two { width: 100%; border-collapse: collapse; background: #fff; margin: 1rem 0; }
 .two-by-two caption { text-align: left; font-weight: 600; padding-bottom: .5rem; }

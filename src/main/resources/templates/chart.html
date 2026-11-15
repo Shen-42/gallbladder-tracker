@@ -16,6 +16,14 @@
         No fat limit set, so no limit line. <a th:href="@{/settings}">Set one</a>
     </p>
 
+    <div th:if="${chart.meals.isEmpty() and chart.episodes.isEmpty()}" class="empty">
+        <p>Nothing logged in the last <span th:text="${days}">30</span> days, so there is nothing to draw yet.</p>
+        <div class="actions">
+            <a class="button" th:href="@{/meals/new}">Log a meal</a>
+            <a class="button" th:href="@{/episodes/new}">Log pain</a>
+        </div>
+    </div>
+    <th:block th:unless="${chart.meals.isEmpty() and chart.episodes.isEmpty()}">
     <th:block th:fragment="chart">
     <div class="chart"><canvas id="chart" aria-label="Fat per meal over the last 30 days, with pain episodes"></canvas></div>
     <p class="hint">Dots are meals (fat in grams, left axis). Triangles are pain episodes (severity, right axis).
@@ -61,6 +69,7 @@
         },
     });
 </script>
+    </th:block>
     </th:block>
 </main>
 </body>

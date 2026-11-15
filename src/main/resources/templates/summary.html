@@ -11,6 +11,15 @@
 <main th:with="limit=${s.threshold == null} ? null : ${#numbers.formatDecimal(s.threshold, 1, 1)}">
     <h1>Summary</h1>
 
+    <div th:if="${s.meals() == 0 and s.pendingMeals == 0 and s.episodes == 0}" class="empty">
+        <p>Nothing to summarise yet. Log your meals, and pain when it happens; after a week or two this page shows
+            whether high-fat meals are followed by pain more often.</p>
+        <div class="actions">
+            <a class="button" th:href="@{/meals/new}">Log a meal</a>
+            <a class="button" th:href="@{/episodes/new}">Log pain</a>
+        </div>
+    </div>
+
     <p th:if="${s.threshold == null}">
         Set a fat limit to split meals into over and within it.
         <a th:href="@{/settings}">Go to Settings</a>
