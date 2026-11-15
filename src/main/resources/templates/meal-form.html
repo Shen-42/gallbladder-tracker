@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:text="${mealId == null} ? 'Log a meal' : 'Edit meal'">Log a meal</title>
     <link rel="stylesheet" th:href="@{/app.css}">
+    <meta name="csrf-header" th:content="${_csrf.headerName}">
+    <meta name="csrf-token" th:content="${_csrf.token}">
 </head>
 <body>
 <nav th:replace="~{fragments :: nav}"></nav>
@@ -171,7 +173,9 @@
     async function pick(row, result) {
         const box = row.querySelector('.usda');
         try {
-            const response = await fetch(usdaUrl, {method: 'POST', body: new URLSearchParams(result)});
+            const csrf = {[document.querySelector('meta[name=csrf-header]').content]:
+                    document.querySelector('meta[name=csrf-token]').content};
+            const response = await fetch(usdaUrl, {method: 'POST', headers: csrf, body: new URLSearchParams(result)});
             if (!response.ok) throw new Error();
             const food = await response.json();
             row.querySelector('[name$=".foodName"]').value = food.name;

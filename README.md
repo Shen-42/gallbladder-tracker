@@ -9,10 +9,11 @@ so you can see which meals came before pain.
 ## Run
 
 ```sh
-docker compose up --build
+APP_PASSWORD=choose-a-password docker compose up --build
 ```
 
-Then open http://localhost:8080. Data lives in the `pgdata` Docker volume, not in the repo.
+Then open http://localhost:8080 and log in as `me` with that password (set `APP_USERNAME` to change the name).
+"Stay logged in" keeps a device logged in for 30 days; changing the password logs every device out. Data lives in the `pgdata` Docker volume, not in the repo.
 Set `TZ` in `compose.yaml` to your time zone.
 
 ### Food search

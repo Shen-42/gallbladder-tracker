@@ -70,3 +70,5 @@ button.link { background: none; color: #2a5d9f; padding: .4rem 0; text-decoratio
 .food-results { list-style: none; padding: 0; }
 .food-results li { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: .6rem .75rem; margin: .4rem 0; }
 .food-results p { margin: .25rem 0 0; }
+nav .logout { margin-left: auto; }
+nav .logout button { margin: 0; padding: 0; }

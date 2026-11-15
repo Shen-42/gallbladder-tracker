@@ -22,6 +22,9 @@ services:
       TZ: Asia/Shanghai
       # For food search. Get a free key at https://fdc.nal.usda.gov/api-key-signup; DEMO_KEY is heavily rate-limited.
       USDA_API_KEY: ${USDA_API_KEY:-DEMO_KEY}
+      # The one login. Username defaults to "me"; the password has no default.
+      APP_USERNAME: ${APP_USERNAME:-me}
+      APP_PASSWORD: ${APP_PASSWORD:?Set APP_PASSWORD to the password you want for logging in}
     depends_on:
       db:
         condition: service_healthy
