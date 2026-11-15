@@ -40,3 +40,15 @@ If the search fails, the form says so and you enter the fat per 100 g yourself.
 ```
 
 Tests use an in-memory H2 database.
+
+## Deploy to Render
+
+`render.yaml` describes the app and its Postgres database, both in Singapore. They cost about $7 and $6 a month.
+The free tier isn't used because its database is deleted after 30 days.
+
+1. Push this repo to GitHub.
+2. In the [Render dashboard](https://dashboard.render.com), choose **New → Blueprint** and pick the repo.
+3. When asked, enter `APP_PASSWORD` (use a long one: the app is on the open internet) and, optionally, `USDA_API_KEY`.
+4. Click **Apply**. The first build takes a few minutes; then open the `onrender.com` address and log in as `me`.
+
+Every push to `main` redeploys. Render backs up paid databases daily; the CSV download in Settings is a second copy.
