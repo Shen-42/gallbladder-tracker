@@ -16,10 +16,14 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
 public class MealController {
+
+    /** How many past meals the new-meal form offers to log again. */
+    private static final int RECENT_MEALS = 5;
 
     private final MealService mealService;
     private final MealRepository meals;
@@ -57,6 +61,11 @@ public class MealController {
             return "redirect:/meals/" + meal.get().getId();
         }
         return failedFormView(mealForm, result, model, null);
+    }
+
+    @PostMapping("/meals/{id}/relog")
+    String relog(@PathVariable Long id) {
+        return "redirect:/meals/" + mealService.relog(id).getId();
     }
 
     @GetMapping("/meals/{id}/edit")
@@ -109,6 +118,7 @@ public class MealController {
         model.addAttribute("foodNames", foods.findAll(Sort.by("name")).stream().map(Food::getName).toList());
         model.addAttribute("askConfirmLarge", askConfirmLarge);
         model.addAttribute("mealId", mealId);
+        model.addAttribute("recentMeals", mealId == null ? mealService.recent(RECENT_MEALS) : List.of());
         return "meal-form";
     }
 }

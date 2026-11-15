@@ -11,6 +11,22 @@
 <main>
     <h1 th:text="${mealId == null} ? 'Log a meal' : 'Edit meal'">Log a meal</h1>
 
+    <section th:unless="${recentMeals.isEmpty()}">
+        <h2>Same as before</h2>
+        <p class="hint">Tap a meal to log it again, eaten now.</p>
+        <ul class="recent">
+            <li th:each="m : ${recentMeals}">
+                <form th:action="@{/meals/{id}/relog(id=${m.id})}" method="post">
+                    <button type="submit" class="secondary">
+                        <span class="what" th:text="${#strings.listJoin(m.items.![food.name], ', ')}">Meal</span>
+                        <span th:text="|${#numbers.formatDecimal(m.fatTotal(), 1, 1)} g fat|">0 g fat</span>
+                    </button>
+                </form>
+            </li>
+        </ul>
+        <h2>Or something new</h2>
+    </section>
+
     <form th:action="${mealId == null} ? @{/meals} : @{/meals/{id}(id=${mealId})}" th:object="${mealForm}" method="post">
         <p class="error" th:each="e : ${#fields.globalErrors()}" th:text="${e}"></p>
 

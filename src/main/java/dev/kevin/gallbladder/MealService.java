@@ -8,14 +8,17 @@ import org.springframework.validation.Errors;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class MealService {
@@ -79,6 +82,34 @@ public class MealService {
             throw new NotFoundException();
         }
         return meals.findById(id).orElseThrow(NotFoundException::new);
+    }
+
+    /** Saves a copy of a meal's foods, amounts and note, eaten now. */
+    @Transactional
+    public Meal relog(long id) {
+        Meal original = meals.findById(id).orElseThrow(NotFoundException::new);
+        Meal copy = new Meal(LocalDateTime.now(clock).truncatedTo(ChronoUnit.MINUTES), original.getNote());
+        original.getItems().forEach(item -> copy.addItem(item.getFood(), item.getGrams()));
+        return meals.save(copy);
+    }
+
+    /** Up to {@code limit} of the latest meals, newest first, skipping any with the same foods and amounts as a newer one. */
+    @Transactional(readOnly = true)
+    public List<Meal> recent(int limit) {
+        Set<List<String>> seen = new HashSet<>();
+        List<Meal> recent = new ArrayList<>();
+        for (Meal meal : meals.findTop50ByOrderByEatenAtDesc()) {
+            List<String> contents = meal.getItems().stream()
+                    .map(i -> i.getFood().getId() + ":" + i.getGrams().stripTrailingZeros().toPlainString())
+                    .toList();
+            if (seen.add(contents)) {
+                recent.add(meal);
+                if (recent.size() == limit) {
+                    break;
+                }
+            }
+        }
+        return recent;
     }
 
     private Optional<Draft> check(MealForm form, Errors errors) {

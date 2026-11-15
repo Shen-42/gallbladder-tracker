@@ -186,6 +186,45 @@ class MealServiceTest {
         assertThat(form.isConfirmLarge()).as("already confirmed when first saved").isTrue();
     }
 
+    @Test
+    void relogCopiesFoodsAmountsAndNoteAtTheCurrentTime() {
+        MealForm form = form(NOW.minusDays(1),
+                item("Oats", "50", MealForm.Unit.GRAMS, "7", null),
+                item("Milk", "200", MealForm.Unit.GRAMS, "3.5", null));
+        form.setNote("breakfast");
+        long id = service.log(form, errors(form)).orElseThrow().getId();
+        reloadFromDatabase();
+
+        long copyId = service.relog(id).getId();
+        reloadFromDatabase();
+
+        Meal copy = meals.findById(copyId).orElseThrow();
+        assertThat(copyId).isNotEqualTo(id);
+        assertThat(copy.getEatenAt()).isEqualTo(NOW);
+        assertThat(copy.getNote()).isEqualTo("breakfast");
+        assertThat(copy.getItems()).extracting(i -> i.getFood().getName()).containsExactly("Oats", "Milk");
+        assertThat(copy.fatTotal()).isEqualByComparingTo("10.5");
+        assertThat(foods.count()).as("reuses the same foods").isEqualTo(2);
+        assertThat(meals.findById(id).orElseThrow().getEatenAt()).as("original untouched").isEqualTo(NOW.minusDays(1));
+    }
+
+    @Test
+    void recentListsNewestFirstAndSkipsRepeats() {
+        long rice = logAt(NOW.minusHours(1), "Rice", "200");
+        logAt(NOW.minusHours(5), "Rice", "200");   // same as the newer one
+        long lessRice = logAt(NOW.minusHours(9), "Rice", "100"); // same food, different amount
+        long fish = logAt(NOW.minusHours(20), "Fish", "150");
+        reloadFromDatabase();
+
+        assertThat(service.recent(5)).extracting(Meal::getId).containsExactly(rice, lessRice, fish);
+        assertThat(service.recent(2)).extracting(Meal::getId).containsExactly(rice, lessRice);
+    }
+
+    private long logAt(LocalDateTime at, String food, String grams) {
+        MealForm form = form(at, item(food, grams, MealForm.Unit.GRAMS, "1", null));
+        return service.log(form, errors(form)).orElseThrow().getId();
+    }
+
     private void reloadFromDatabase() {
         em.flush();
         em.clear();

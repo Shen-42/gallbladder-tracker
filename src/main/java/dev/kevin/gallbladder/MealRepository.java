@@ -13,6 +13,8 @@ public interface MealRepository extends JpaRepository<Meal, Long> {
     @Query("select m from Meal m where m.eatenAt >= :from and m.eatenAt < :to order by m.eatenAt")
     List<Meal> findEatenBetween(LocalDateTime from, LocalDateTime to);
 
+    List<Meal> findTop50ByOrderByEatenAtDesc();
+
     /** Undoes a delete. Native SQL because the entity's restriction hides deleted rows from JPQL. Returns rows changed. */
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query(value = "update meal set deleted_at = null where id = :id and deleted_at is not null", nativeQuery = true)
