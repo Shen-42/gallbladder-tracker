@@ -94,30 +94,49 @@ public class SummaryService {
         int hours = s.getLookbackHours();
         LocalDateTime now = LocalDateTime.now(clock);
 
-        TreeSet<LocalDateTime> onsets = new TreeSet<>();
-        candidateEpisodes.forEach(e -> onsets.add(e.getStartedAt()));
+        List<Outcome> outcomes = outcomes(mealsToCount, candidateEpisodes, hours, now);
 
-        int overFollowed = 0, overNotFollowed = 0, withinFollowed = 0, withinNotFollowed = 0, pending = 0;
+        int overFollowed = 0, overNotFollowed = 0, withinFollowed = 0, withinNotFollowed = 0;
         List<Duration> delays = new ArrayList<>();
-        for (Meal meal : mealsToCount) {
-            LocalDateTime eaten = meal.getEatenAt();
-            LocalDateTime windowEnd = eaten.plusHours(hours);
-            LocalDateTime onset = onsets.ceiling(eaten);
-            boolean followed = onset != null && !onset.isAfter(windowEnd);
-            if (!followed && windowEnd.isAfter(now)) {
-                pending++; // an episode could still come, so it can't count as "not followed" yet
-                continue;
-            }
+        for (Outcome outcome : outcomes) {
+            Meal meal = outcome.meal();
             boolean over = threshold != null && meal.fatTotal().compareTo(threshold) > 0;
-            if (followed) {
-                delays.add(Duration.between(eaten, onset));
+            if (outcome.followed()) {
+                delays.add(Duration.between(meal.getEatenAt(), outcome.onset()));
                 if (over) overFollowed++; else withinFollowed++;
             } else {
                 if (over) overNotFollowed++; else withinNotFollowed++;
             }
         }
         return new Summary(threshold, hours, overFollowed, overNotFollowed, withinFollowed, withinNotFollowed,
-                episodeCount, pending, median(delays));
+                episodeCount, mealsToCount.size() - outcomes.size(), median(delays));
+    }
+
+    /** A meal whose outcome is known. {@code onset} is the first episode start within the window, or null if none came. */
+    record Outcome(Meal meal, LocalDateTime onset) {
+        boolean followed() {
+            return onset != null;
+        }
+    }
+
+    /**
+     * The outcome of each meal, in the same order. A meal is followed when an episode starts at or after it and at most
+     * {@code lookbackHours} later. Meals whose window is still open with no episode yet are left out, because an
+     * episode could still come.
+     */
+    static List<Outcome> outcomes(List<Meal> meals, List<Episode> episodes, int lookbackHours, LocalDateTime now) {
+        TreeSet<LocalDateTime> onsets = new TreeSet<>();
+        episodes.forEach(e -> onsets.add(e.getStartedAt()));
+        List<Outcome> outcomes = new ArrayList<>();
+        for (Meal meal : meals) {
+            LocalDateTime windowEnd = meal.getEatenAt().plusHours(lookbackHours);
+            LocalDateTime onset = onsets.ceiling(meal.getEatenAt());
+            boolean followed = onset != null && !onset.isAfter(windowEnd);
+            if (followed || !windowEnd.isAfter(now)) {
+                outcomes.add(new Outcome(meal, followed ? onset : null));
+            }
+        }
+        return outcomes;
     }
 
     static Duration median(List<Duration> values) {

@@ -67,3 +67,6 @@ button.link { background: none; color: #2a5d9f; padding: .4rem 0; text-decoratio
     border: 2px solid #ccd; border-top-color: #2a5d9f; border-radius: 50%; animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2.4s; } }
+.food-results { list-style: none; padding: 0; }
+.food-results li { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: .6rem .75rem; margin: .4rem 0; }
+.food-results p { margin: .25rem 0 0; }

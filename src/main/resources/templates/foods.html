@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Foods and pain</title>
+    <link rel="stylesheet" th:href="@{/app.css}">
+</head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main>
+    <h1>Which foods come before pain?</h1>
+    <p><a th:href="@{/summary}">&larr; Back to the summary</a></p>
+
+    <p th:unless="${r.enoughEpisodes}" class="muted"
+       th:text="|Results appear once you have logged ${minEpisodes} episodes and some meals have been followed by pain. Until then any result would be chance.|"></p>
+
+    <th:block th:if="${r.enoughEpisodes}">
+        <p th:text="|${r.followed} of ${r.meals} meals were followed by pain within ${r.lookbackHours} h. Foods eaten in at least ${minMeals} meals, most unusual first:|"></p>
+        <p th:if="${r.results.isEmpty()}" class="muted"
+           th:text="|No food has been eaten in ${minMeals} meals yet.|"></p>
+        <ul class="food-results">
+            <li th:each="f : ${r.results}">
+                <strong th:text="${f.food}">Food</strong> <span class="muted" th:text="${f.pText()}">p</span>
+                <p th:text="${f.sentence()}"></p>
+            </li>
+        </ul>
+        <p class="hint" th:if="${r.results.size() > 1}"
+           th:text="|With ${r.results.size()} foods tested, some will look unusual by chance alone.|"></p>
+    </th:block>
+
+    <p><a th:href="@{/summary/help#foods}">How this is calculated, and why to treat it as a lead, not proof</a></p>
+
+    <details th:unless="${r.tooFew.isEmpty()}">
+        <summary th:text="|Not enough meals yet (${r.tooFew.size()} foods)|">Not enough meals yet</summary>
+        <ul class="items">
+            <li th:each="e : ${r.tooFew}" th:text="|${e.key}: ${e.value} of ${minMeals} meals|"></li>
+        </ul>
+    </details>
+</main>
+</body>
+</html>

@@ -30,6 +30,26 @@
     <p>One episode can follow several meals, so it can be counted more than once. Things other than fat, such as
         meal size or timing, can also matter.</p>
 
+    <h2 id="foods">Foods and pain: the permutation test</h2>
+    <p>For each food eaten in at least <span th:text="${minMeals}">10</span> meals, the app counts how many of those
+        meals were followed by pain. Then it asks: if this food made no difference, how often would its meals end up
+        with at least that many by luck alone?</p>
+    <p>To answer, it keeps the real number of meals followed by pain but hands that label out to meals at random,
+        <span th:text="${#numbers.formatInteger(permutations, 1, 'COMMA')}">10,000</span> times, and counts how often
+        the food's meals get at least as many as they really did. That share is the <strong>p-value</strong>.
+        A small p-value (say below 0.05) means the real result would be unusual if the food didn't matter.</p>
+    <p>Treat it as a lead to discuss, not proof:</p>
+    <ul class="items">
+        <li>Testing many foods means some will look unusual by chance. With 20 foods, about one is expected
+            below 0.05 even if none matter.</li>
+        <li>Foods eaten together, such as rice with a fatty dish, share their results.</li>
+        <li>Meals close together share the same episode, so they are not independent, which makes the test
+            overconfident.</li>
+        <li>It only looks at whether a food was in the meal, not how much of it.</li>
+    </ul>
+    <p>Foods with fewer meals are left out, and nothing is shown before
+        <span th:text="${minEpisodes}">5</span> episodes, because the result would not mean anything.</p>
+
     <p class="muted">This is a record to discuss with your doctor, not a diagnosis.</p>
 </main>
 </body>

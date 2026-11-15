@@ -48,6 +48,7 @@
     <p class="muted" th:unless="${s.showPercentages()}"
        th:text="|Percentages appear once you have logged ${T(dev.kevin.gallbladder.SummaryService).MIN_EPISODES_FOR_PERCENTAGES} episodes. Until then they would swing too much to mean anything.|"></p>
     <p><a th:href="@{/summary/help}">How this is calculated, and why small counts are unreliable</a></p>
+    <p><a th:href="@{/summary/foods}">Which foods come before pain?</a></p>
 
     <details>
         <summary>More details</summary>

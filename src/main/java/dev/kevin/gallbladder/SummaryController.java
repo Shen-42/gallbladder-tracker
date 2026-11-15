@@ -19,11 +19,14 @@ public class SummaryController {
 
     private final SummaryService summaryService;
     private final ReportService reportService;
+    private final FoodTestService foodTestService;
     private final Clock clock;
 
-    public SummaryController(SummaryService summaryService, ReportService reportService, Clock clock) {
+    public SummaryController(SummaryService summaryService, ReportService reportService,
+                             FoodTestService foodTestService, Clock clock) {
         this.summaryService = summaryService;
         this.reportService = reportService;
+        this.foodTestService = foodTestService;
         this.clock = clock;
     }
 
@@ -36,7 +39,17 @@ public class SummaryController {
     @GetMapping("/summary/help")
     String help(Model model) {
         model.addAttribute("minEpisodes", SummaryService.MIN_EPISODES_FOR_PERCENTAGES);
+        model.addAttribute("minMeals", FoodTestService.MIN_MEALS_PER_FOOD);
+        model.addAttribute("permutations", FoodTestService.PERMUTATIONS);
         return "summary-help";
+    }
+
+    @GetMapping("/summary/foods")
+    String foods(Model model) {
+        model.addAttribute("r", foodTestService.report());
+        model.addAttribute("minEpisodes", SummaryService.MIN_EPISODES_FOR_PERCENTAGES);
+        model.addAttribute("minMeals", FoodTestService.MIN_MEALS_PER_FOOD);
+        return "foods";
     }
 
     /** Writes the PDF for appointments, or shows the summary page with an error beside the dates. */
