@@ -31,6 +31,10 @@
             <a th:href="@{/days}">Cancel</a>
         </div>
     </form>
+
+    <h2>Your data</h2>
+    <p class="hint">Every meal and episode, as two CSV files in a zip. Opens in any spreadsheet.</p>
+    <a class="button" th:href="@{/export.zip}" download>Download CSV</a>
 </main>
 </body>
 </html>
