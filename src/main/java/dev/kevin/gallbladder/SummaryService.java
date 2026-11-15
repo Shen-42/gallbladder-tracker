@@ -16,7 +16,7 @@ import java.util.TreeSet;
 public class SummaryService {
 
     /** Below this many episodes the page shows only counts, no percentages. */
-    static final int MIN_EPISODES_FOR_PERCENTAGES = 5;
+    public static final int MIN_EPISODES_FOR_PERCENTAGES = 5;
 
     /**
      * A meal is "followed" when an episode starts at or after the meal and at most {@code lookbackHours} later.
